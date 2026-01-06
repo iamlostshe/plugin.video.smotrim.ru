@@ -6,7 +6,7 @@ import requests
 import xbmc
 import xbmcgui
 
-from smotrim.smotrim import USER_AGENT, Smotrim
+from smotrim.smotrim import USER_AGENT
 
 NEVER = 100 * 1000 * 60 * 60 * 24
 
@@ -18,7 +18,7 @@ class User:
         self._site = None
 
 
-    def init_session(self, site: Smotrim) -> None:
+    def init_session(self, site) -> None:
         self._site = site
 
         self.phone = site.addon.getSetting("phone")
@@ -44,7 +44,7 @@ class User:
             self.get_http(f"https://{self.domain}")
             self._save_cookies()
 
-    def watch(self, site: Smotrim, context: str | None = "") -> None:
+    def watch(self, site, context: str | None = "") -> None:
         self.init_session(site)
 
         if self._login():

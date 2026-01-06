@@ -1,5 +1,4 @@
 import inspect
-import os
 import sys
 from importlib import import_module
 from pathlib import Path
@@ -9,8 +8,8 @@ from urllib.parse import quote as encode4url
 import xbmc
 import xbmcaddon
 import xbmcvfs
-from fake_useragent import UserAgent
 
+from lib.fake_useragent import UserAgent
 from smotrim.users import User
 
 from . import kodiutils

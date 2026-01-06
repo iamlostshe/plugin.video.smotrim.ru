@@ -5,8 +5,7 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
-    "xbmc",
-    "xbmcaddon",
+    "fake-useragent>=2.2.0",
 ]
 
 [tool.ruff.lint]
