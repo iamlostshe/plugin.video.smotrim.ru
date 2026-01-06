@@ -5,15 +5,15 @@
 # License: GPL v.3 https://www.gnu.org/copyleft/gpl.html
 import xbmc
 
-import resources.lib.modules.pages as pages
-import resources.lib.modules.searches as searches
-import resources.lib.modules.podcasts as podcasts
-import resources.lib.modules.boxes as boxes
-import resources.lib.modules.brands as brands
-import resources.lib.modules.articles as articles
-import resources.lib.modules.channels as channels
-import resources.lib.modules.history as histories
-from resources.lib.kodiutils import get_url
+import smotrim.modules.pages as pages
+import smotrim.modules.searches as searches
+import smotrim.modules.podcasts as podcasts
+import smotrim.modules.boxes as boxes
+import smotrim.modules.brands as brands
+import smotrim.modules.articles as articles
+import smotrim.modules.channels as channels
+import smotrim.modules.history as histories
+from smotrim.kodiutils import get_url
 
 
 class Home(pages.Page):

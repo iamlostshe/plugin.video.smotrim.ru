@@ -6,9 +6,9 @@
 
 
 import xbmc
-import resources.lib.server.wsgi_app as wsgi_app
-import resources.lib.server.wsgi_server as wsgi_server
-import resources.lib.rssbuilder as rssbuilder
+import smotrim.server.wsgi_app as wsgi_app
+import smotrim.server.wsgi_server as wsgi_server
+import smotrim.rssbuilder as rssbuilder
 from wsgiref.simple_server import make_server
 
 

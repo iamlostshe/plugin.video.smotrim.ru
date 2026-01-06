@@ -9,10 +9,10 @@ WSGI application for Smotrim.ru addon
 import re
 from urllib.parse import unquote, parse_qsl
 
-import resources.lib.modules.persons as persons
-import resources.lib.modules.articles as articles
+import smotrim.modules.persons as persons
+import smotrim.modules.articles as articles
 
-from resources.lib.smotrim import SERVER_ADDR
+from smotrim.smotrim import SERVER_ADDR
 
 
 def default_app(environ, start_response):

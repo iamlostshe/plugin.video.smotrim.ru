@@ -6,13 +6,13 @@
 import os
 import re
 
-import resources.lib.modules.pages as pages
-from resources.lib.kodiutils import get_url
-import resources.lib.modules.brands as brands
-import resources.lib.modules.videos as videos
-import resources.lib.modules.audios as audios
-import resources.lib.modules.articles as articles
-import resources.lib.modules.podcasts as podcasts
+import smotrim.modules.pages as pages
+from smotrim.kodiutils import get_url
+import smotrim.modules.brands as brands
+import smotrim.modules.videos as videos
+import smotrim.modules.audios as audios
+import smotrim.modules.articles as articles
+import smotrim.modules.podcasts as podcasts
 
 
 class Box(pages.Page):

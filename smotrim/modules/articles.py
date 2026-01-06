@@ -5,10 +5,10 @@
 # License: GPL v.3 https://www.gnu.org/copyleft/gpl.html
 import xbmc
 
-import resources.lib.modules.pages as pages
-import resources.lib.rssbuilder as rssbuilder
-import resources.lib.smotrim as smotrim
-import resources.lib.users as users
+import smotrim.modules.pages as pages
+import smotrim.rssbuilder as rssbuilder
+import smotrim.smotrim as smotrim
+import smotrim.users as users
 
 from ..kodiutils import clean_html, get_url
 

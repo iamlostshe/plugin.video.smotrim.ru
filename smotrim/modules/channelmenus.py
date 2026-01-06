@@ -6,12 +6,12 @@
 
 import xbmc
 
-import resources.lib.modules.pages as pages
-import resources.lib.modules.channels as channels
-import resources.lib.modules.brands as brands
+import smotrim.modules.pages as pages
+import smotrim.modules.channels as channels
+import smotrim.modules.brands as brands
 
-from resources.lib import kodiutils
-from resources.lib.kodiutils import get_url
+from smotrim import kodiutils
+from smotrim.kodiutils import get_url
 
 
 class ChannelMenu(pages.Page):

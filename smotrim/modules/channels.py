@@ -7,8 +7,8 @@ import os
 
 import xbmc
 
-import resources.lib.modules.pages as pages
-from resources.lib.kodiutils import get_url
+import smotrim.modules.pages as pages
+from smotrim.kodiutils import get_url
 
 
 class Channel(pages.Page):

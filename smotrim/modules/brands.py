@@ -8,10 +8,10 @@ import os
 
 import xbmc
 
-import resources.lib.modules.pages as pages
-import resources.lib.modules.persons as persons
+import smotrim.modules.pages as pages
+import smotrim.modules.persons as persons
 
-from resources.lib.kodiutils import get_url
+from smotrim.kodiutils import get_url
 
 
 class Brand(pages.Page):
@@ -29,7 +29,7 @@ class Brand(pages.Page):
         if not ('search' in self.params):
             self.search_text = self.site.get_user_input()
             if self.search_text:
-                import resources.lib.modules.searches as searches
+                import smotrim.modules.searches as searches
                 search = searches.Search(self.site)
                 search.save_to_history(self.search_text)
 

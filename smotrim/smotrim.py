@@ -83,7 +83,7 @@ class Smotrim:
 
     # load items from self.context
     def load_context_items(self):
-        mod = import_module("resources.lib.modules.%s" % self.context)
+        mod = import_module("smotrim.modules.%s" % self.context)
         classes = [cls for _, cls in inspect.getmembers(mod, inspect.isclass(mod))]
         getattr(classes[0](self), self.action)()
 

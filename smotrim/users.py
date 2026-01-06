@@ -12,7 +12,7 @@ import requests
 import xbmc
 import xbmcgui
 
-from resources.lib.smotrim import USER_AGENT
+from smotrim.smotrim import USER_AGENT
 
 NEVER = 100 * 1000 * 60 * 60 * 24
 

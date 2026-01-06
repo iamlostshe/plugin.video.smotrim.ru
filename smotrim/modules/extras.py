@@ -11,10 +11,10 @@ import xbmc
 import xbmcgui
 import xbmcvfs
 
-import resources.lib.modules.pages as pages
-import resources.lib.modules.channels as channels
-import resources.lib.modules.channelmenus as channelmenus
-from resources.lib import kodiutils, iptvmanager
+import smotrim.modules.pages as pages
+import smotrim.modules.channels as channels
+import smotrim.modules.channelmenus as channelmenus
+from smotrim import kodiutils, iptvmanager
 
 
 class Extra:

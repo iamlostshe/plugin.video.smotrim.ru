@@ -8,13 +8,13 @@ import os
 import json
 from stat import ST_CTIME, S_ISREG, ST_MODE
 
-import resources.lib.modules.pages as pages
+import smotrim.modules.pages as pages
 
-import resources.lib.modules.brands as brands
+import smotrim.modules.brands as brands
 
 import xbmc
 
-from resources.lib.kodiutils import get_url
+from smotrim.kodiutils import get_url
 
 
 class History(pages.Page):

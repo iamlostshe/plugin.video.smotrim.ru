@@ -10,8 +10,8 @@ import shutil
 import unittest
 import mock
 
-from resources.lib.users import User
-from resources.lib.smotrim import Smotrim
+from smotrim.users import User
+from smotrim.smotrim import Smotrim
 
 cwd = os.path.dirname(os.path.abspath(__file__))
 web_api_url = "https://test-api.smotrim.ru/api/v1"

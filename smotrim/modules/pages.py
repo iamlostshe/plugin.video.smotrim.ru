@@ -16,7 +16,7 @@ import hashlib
 
 from urllib.parse import quote as encode4url
 from ..kodiutils import remove_files_by_pattern, upnext_signal, kodi_version_major, get_url
-import resources.lib.kodiplayer as kodiplayer
+import smotrim.kodiplayer as kodiplayer
 from ..smotrim import USER_AGENT
 from ..kodiutils import clean_html
 
@@ -231,7 +231,7 @@ class Page(object):
     def create_root_li(self):
         """
         This method can be optionally overridden if the the module class wants to expose a root-level menu.
-        Usage is mainly from the lib.modules.home module.
+        Usage is mainly from the smotrim.modules.home module.
 
         @return: the structure defining the list item
         """

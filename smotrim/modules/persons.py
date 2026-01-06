@@ -9,11 +9,11 @@ import re
 
 import xbmc
 
-import resources.lib.modules.pages as pages
-import resources.lib.smotrim as smotrim
-import resources.lib.users as users
-from resources.lib import kodiutils
-from resources.lib.kodiutils import get_url
+import smotrim.modules.pages as pages
+import smotrim.smotrim as smotrim
+import smotrim.users as users
+from smotrim import kodiutils
+from smotrim.kodiutils import get_url
 
 CONTEXT = "persons"
 CONTEXT_LIMIT = 30
