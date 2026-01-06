@@ -1,26 +1,24 @@
-# -*- coding: utf-8 -*-
 # GNU General Public License v3.0 (see COPYING or https://www.gnu.org/licenses/gpl-3.0.txt)
-""" Implementation of IPTVManager class """
+"""Implementation of IPTVManager class"""
 
-from __future__ import absolute_import, division, unicode_literals
 
 class IPTVManager:
-    """ Interface to IPTV Manager """
+    """Interface to IPTV Manager"""
 
     def __init__(self, extra):
-        """ Initialize IPTV Manager object. """
+        """Initialize IPTV Manager object."""
         self.extra = extra
-        self.port = int(extra.site.params['port'])
+        self.port = int(extra.site.params["port"])
 
     def via_socket(func):  # pylint: disable=no-self-argument
-        """ Send the output of the wrapped function to socket. """
+        """Send the output of the wrapped function to socket."""
 
         def send(self):
-            """ Decorator to send data over a socket. """
+            """Decorator to send data over a socket."""
             import json
             import socket
             sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            sock.connect(('127.0.0.1', self.port))
+            sock.connect(("127.0.0.1", self.port))
             try:
                 sock.sendall(json.dumps(func(self)).encode())  # pylint: disable=not-callable
             finally:
@@ -30,10 +28,10 @@ class IPTVManager:
 
     @via_socket
     def send_channels(self):  # pylint: disable=no-method-argument,no-self-use
-        """ Return JSON-STREAMS formatted information to IPTV Manager. """
+        """Return JSON-STREAMS formatted information to IPTV Manager."""
         return dict(version=1, streams=self.extra.export_channels())
 
     @via_socket
     def send_epg(self):  # pylint: disable=no-method-argument,no-self-use
-        """ Return JSON-EPG formatted information to IPTV Manager. """
+        """Return JSON-EPG formatted information to IPTV Manager."""
         return dict(version=1, epg=self.extra.export_tv_guide())

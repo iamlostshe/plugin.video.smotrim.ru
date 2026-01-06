@@ -14,7 +14,7 @@ RSSFEEDS = "RssFeeds.xml"
 RSSUPDATEINTERVAL = 30
 
 
-class RSSBuilder():
+class RSSBuilder:
 
     def __init__(self):
         self.et = None
@@ -58,13 +58,13 @@ class RSSBuilder():
             self._backup_file(rssfeeds)
             self._save_pretty_xml(rssfeedsxml, rssfeeds)
 
-            xbmc.executebuiltin('RefreshRSS')
+            xbmc.executebuiltin("RefreshRSS")
 
     def _get_or_add_set_1(self, parent):
         set_1 = parent.find("set")
         if set_1 is None:
             set_1 = self._add_element("set", parent)
-            set_1.attrib['id'] = "1"
+            set_1.attrib["id"] = "1"
         return set_1
 
     def _add_rss_feed(self, rssfeedsxml, rssurl):
@@ -75,7 +75,7 @@ class RSSBuilder():
                 return False
         feed = self._add_element("feed", None, txt=rssurl)
         set_1.insert(0, feed)
-        feed.attrib['updateinterval'] = str(RSSUPDATEINTERVAL)
+        feed.attrib["updateinterval"] = str(RSSUPDATEINTERVAL)
         return True
 
     def _remove_rss_feed(self, rssfeedsxml, rssurl):
@@ -101,14 +101,13 @@ class RSSBuilder():
         if xbmcvfs.exists(filename):
             tree = ET.parse(filename)
             return tree.getroot()
-        else:
-            return ET.fromstring("<rssfeeds />")
+        return ET.fromstring("<rssfeeds />")
 
     @staticmethod
     def _save_pretty_xml(element, output_xml):
         xml_string = minidom.parseString(ET.tostring(element)).toprettyxml()
         xml_string = os.linesep.join(
-            [s for s in xml_string.splitlines() if s.strip() and not("<?xml" in s)])
+            [s for s in xml_string.splitlines() if s.strip() and "<?xml" not in s])
         xbmc.log(xml_string, xbmc.LOGDEBUG)
         with open(output_xml, "w") as file_out:
             file_out.write(os.linesep.join(['<?xml version="1.0" encoding="UTF-8" standalone="yes"?>', xml_string]))
@@ -121,5 +120,4 @@ class RSSBuilder():
             if xbmcvfs.exists(fpathbak):
                 xbmcvfs.delete(fpathbak)
             return xbmcvfs.copy(fpath, fpathbak)
-        else:
-            return False
+        return False

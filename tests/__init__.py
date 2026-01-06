@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Module: tests
 # Author: Alex Bratchik
 # Created on: 03.04.2021

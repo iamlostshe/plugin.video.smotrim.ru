@@ -1,15 +1,12 @@
-# -*- coding: utf-8 -*-
 # Module: smotrim
 # Author: Alex Bratchik
 # Created on: 03.04.2021
 # License: GPL v.3 https://www.gnu.org/copyleft/gpl.html
 
+import inspect
 import os
 import sys
-import inspect
-
 from importlib import import_module
-
 from urllib.parse import parse_qsl
 from urllib.parse import quote as encode4url
 
@@ -31,10 +28,10 @@ class Smotrim:
         self.id = ADDON_ID
         self.server_port = SERVER_PORT
         self.addon = xbmcaddon.Addon(self.id)
-        self.path = self.addon.getAddonInfo('path')
+        self.path = self.addon.getAddonInfo("path")
         self.media_path = os.path.join(self.path, "resources", "media")
         self.data_path = get_data_path(self.addon)
-        self.history_path = kodiutils.create_folder(os.path.join(self.data_path, 'history'))
+        self.history_path = kodiutils.create_folder(os.path.join(self.data_path, "history"))
 
         self.user = None
 
@@ -67,15 +64,15 @@ class Smotrim:
         xbmc.log("User: %s" % user.phone, xbmc.LOGDEBUG)
 
         if context:
-            self.params = {'context': context}
+            self.params = {"context": context}
             xbmc.log("Params ignored")
         else:
             params_ = sys.argv[2]
             xbmc.log("Params: %s" % params_, xbmc.LOGDEBUG)
             self.params = dict(parse_qsl(params_[1:]))
 
-        self.context = self.params['context'] if self.params and ('context' in self.params) else "home"
-        self.action = self.params['action'] if self.params and ('action' in self.params) else "load"
+        self.context = self.params["context"] if self.params and ("context" in self.params) else "home"
+        self.action = self.params["action"] if self.params and ("action" in self.params) else "load"
         xbmc.log("Context: %s" % self.context, xbmc.LOGDEBUG)
         xbmc.log("Action: %s" % self.action, xbmc.LOGDEBUG)
 
@@ -96,10 +93,9 @@ class Smotrim:
             xbmc.log("Query %s returned HTTP error %s" % (url, response.status_code))
         if output == "json":
             return {} if err else response.json()
-        elif output == "text":
+        if output == "text":
             return "" if err else response.text
-        else:
-            return response
+        return response
 
     # *** Add-on helpers
 
@@ -108,7 +104,7 @@ class Smotrim:
 
     def get_user_input(self):
         kbd = xbmc.Keyboard()
-        kbd.setDefault('')
+        kbd.setDefault("")
         kbd.setHeading(self.language(30010))
         kbd.doModal()
         keyword = None
@@ -129,13 +125,13 @@ class Smotrim:
                               "!Sec-Fetch-Mode=cors",
                               "!Sec-Fetch-Site=cross-site",
                               "!Sec-GPC=1",
-                              "Connection=keep-alive"])
+                              "Connection=keep-alive"]),
                          ])
 
 
 def get_data_path(addon: object = None):
     if addon is None:
         addon = xbmcaddon.Addon(ADDON_ID)
-    return kodiutils.create_folder(os.path.join(xbmcvfs.translatePath(addon.getAddonInfo('profile')), 'data'))
+    return kodiutils.create_folder(os.path.join(xbmcvfs.translatePath(addon.getAddonInfo("profile")), "data"))
 
 

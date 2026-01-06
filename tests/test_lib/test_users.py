@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Module: test_users
 # Author: Alex Bratchik
 # Created on: 03.04.2021
@@ -8,10 +7,10 @@ import os
 import re
 import shutil
 import unittest
-import mock
+from unittest import mock
 
-from smotrim.users import User
 from smotrim.smotrim import Smotrim
+from smotrim.users import User
 
 cwd = os.path.dirname(os.path.abspath(__file__))
 web_api_url = "https://test-api.smotrim.ru/api/v1"
@@ -22,52 +21,51 @@ def get_project_folder(fld, plugin_name):
     dpath = os.path.split(fld)
     if dpath[1] == plugin_name:
         return fld
-    else:
-        return get_project_folder(dpath[0], plugin_name)
+    return get_project_folder(dpath[0], plugin_name)
 
 
 class UsersTestCase(unittest.TestCase):
 
-    @mock.patch('sys.argv', ["", "1", ""])
+    @mock.patch("sys.argv", ["", "1", ""])
     def test_01_load(self):
         self.run_plugin()
 
-    @mock.patch('sys.argv', ["", "2", "?action=load&context=searches&url=plugin%3a%2f%2fplugin.video.smotrim.ru%2f"])
+    @mock.patch("sys.argv", ["", "2", "?action=load&context=searches&url=plugin%3a%2f%2fplugin.video.smotrim.ru%2f"])
     def test_02_searches(self):
         self.run_plugin()
 
-    @mock.patch('sys.argv', ["", "2", "?action=search&context=brands&url=plugin%3a%2f%2fplugin.video.smotrim.ru%2f"])
+    @mock.patch("sys.argv", ["", "2", "?action=search&context=brands&url=plugin%3a%2f%2fplugin.video.smotrim.ru%2f"])
     def test_03_search(self):
         self.run_plugin()
 
-    @mock.patch('sys.argv', ["", "4", "?action=load&context=articles&url=plugin%3a%2f%2fplugin.video.smotrim.ru%2f"])
+    @mock.patch("sys.argv", ["", "4", "?action=load&context=articles&url=plugin%3a%2f%2fplugin.video.smotrim.ru%2f"])
     def test_04_news(self):
         self.run_plugin()
 
-    @mock.patch('sys.argv',
+    @mock.patch("sys.argv",
                 ["", "14", "?action=load&content=files&context=channels&url=plugin%3a%2f%2fplugin.video.smotrim.ru%2f"])
     def test_041_channels(self):
         self.run_plugin()
 
-    @mock.patch('sys.argv',
-                ["", "14", "?action=load&cache_expire=86400&content=albums&context=podcasts&" +
+    @mock.patch("sys.argv",
+                ["", "14", "?action=load&cache_expire=86400&content=albums&context=podcasts&"
                            "url=plugin%3a%2f%2fplugin.video.smotrim.ru%2f"])
     def test_042_podcasts(self):
         self.run_plugin()
 
-    @mock.patch('sys.argv', ["", "2", "?action=search_by_tag&cache_expire=86400&content=files&context=brands&" +
-                             "has_children=True&tagname=Documentary&tags=10000002&" +
+    @mock.patch("sys.argv", ["", "2", "?action=search_by_tag&cache_expire=86400&content=files&context=brands&"
+                             "has_children=True&tagname=Documentary&tags=10000002&"
                              "url=plugin%3a%2f%2fplugin.video.smotrim.ru%2f"])
     def test_05_documentary(self):
         self.run_plugin()
 
-    @mock.patch('sys.argv', ["", "8", "?action=search_by_tag&cache_expire=86400&content=movies&context=brands&" +
-                             "has_children=False&tagname=Premieres&tags=2994&" +
+    @mock.patch("sys.argv", ["", "8", "?action=search_by_tag&cache_expire=86400&content=movies&context=brands&"
+                             "has_children=False&tagname=Premieres&tags=2994&"
                              "url=plugin%3a%2f%2fplugin.video.smotrim.ru%2f"])
     def test_06_premieres(self):
         self.run_plugin()
 
-    @mock.patch('sys.argv', ["", "10", "?action=load&context=history&url=plugin%3a%2f%2fplugin.video.smotrim.ru%2f"])
+    @mock.patch("sys.argv", ["", "10", "?action=load&context=history&url=plugin%3a%2f%2fplugin.video.smotrim.ru%2f"])
     def test_07_history(self):
         self.run_plugin()
 
@@ -96,7 +94,7 @@ class UsersTestCase(unittest.TestCase):
         shutil.rmtree(smotrim.data_path)
 
     def localized_string(self, id):
-        with open(self.resource_file, 'r') as f:
+        with open(self.resource_file) as f:
             lines = f.readlines()
             for index, line in enumerate(lines):
                 if "#%s" % id in line:
@@ -104,5 +102,5 @@ class UsersTestCase(unittest.TestCase):
         self.fail("Fail to find resource string %s" % id)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

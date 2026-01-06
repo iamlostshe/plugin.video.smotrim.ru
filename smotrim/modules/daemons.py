@@ -1,15 +1,15 @@
-# -*- coding: utf-8 -*-
 # Module: daemons
 # Author: Alex Bratchik
 # Created on: 03.04.2021
 # License: GPL v.3 https://www.gnu.org/copyleft/gpl.html
 
 
-import xbmc
-import smotrim.server.wsgi_app as wsgi_app
-import smotrim.server.wsgi_server as wsgi_server
-import smotrim.rssbuilder as rssbuilder
 from wsgiref.simple_server import make_server
+
+import xbmc
+
+from smotrim import rssbuilder
+from smotrim.server import wsgi_app, wsgi_server
 
 
 class Daemon:
@@ -28,7 +28,7 @@ class Daemon:
         self.rb.add_news_to_rss(self.site, self.site.addon.getSettingBool("addnewstorss"))
 
         xbmc.log("Starting Smotrim.ru extended info service on port %s ..." % str(self.site.server_port), xbmc.LOGDEBUG)
-        self.wsgi = make_server('',
+        self.wsgi = make_server("",
                                 port=self.site.server_port,
                                 app=wsgi_app.default_app,
                                 server_class=wsgi_server.SmotrimWsgiServer)

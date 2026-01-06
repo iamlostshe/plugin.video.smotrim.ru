@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Module: kodiplayer
 # Created on: 03.04.2021
 # License: GPL v.3 https://www.gnu.org/copyleft/gpl.html
@@ -7,10 +6,10 @@ import xbmc
 
 
 class KodiPlayer(xbmc.Player):
-    """ A custom Player object to check if Playback has started """
+    """A custom Player object to check if Playback has started"""
 
     def __init__(self):
-        """ Initialises a custom Player object
+        """Initialises a custom Player object
         """
         xbmc.Player.__init__(self)
 
@@ -27,7 +26,7 @@ class KodiPlayer(xbmc.Player):
             xbmc.log("Player: Already Playing", xbmc.LOGDEBUG)
             return True
 
-        for i in range(0, int(time_out / self.__pollInterval)):
+        for i in range(int(time_out / self.__pollInterval)):
             if self.__monitor.abortRequested():
                 xbmc.log("Player: Abort requested (%s)" % i * self.__pollInterval, xbmc.LOGDEBUG)
                 return False
@@ -47,32 +46,32 @@ class KodiPlayer(xbmc.Player):
         return False
 
     def onAVStarted(self):  # pylint: disable=invalid-name
-        """ Will be called when Kodi has a video or audiostream """
+        """Will be called when Kodi has a video or audiostream"""
         xbmc.log("Player: [onAVStarted] called", xbmc.LOGDEBUG)
         self.__playback_started()
 
     def onPlayBackStopped(self):  # pylint: disable=invalid-name
-        """ Will be called when [user] stops Kodi playing a file """
+        """Will be called when [user] stops Kodi playing a file"""
         xbmc.log("Player: [onPlayBackStopped] called", xbmc.LOGDEBUG)
         self.__playback_stopped()
 
     def onPlayBackError(self):  # pylint: disable=invalid-name
-        """ Will be called when playback stops due to an error. """
+        """Will be called when playback stops due to an error."""
         xbmc.log("Player: [onPlayBackError] called", xbmc.LOGDEBUG)
         self.__playback_stopped()
 
     def __playback_stopped(self):
-        """ Sets the correct flags after playback stopped """
+        """Sets the correct flags after playback stopped"""
         self.__playBackEventsTriggered = False
         self.__playPlayBackStoppedEventsTriggered = True
 
     def __playback_started(self):
-        """ Sets the correct flags after playback started """
+        """Sets the correct flags after playback started"""
         self.__playBackEventsTriggered = True
         self.__playPlayBackStoppedEventsTriggered = False
 
     def __is_url_playing(self, url):
-        """ Checks whether the given url is playing
+        """Checks whether the given url is playing
         :param str url: The url to check for playback.
         :return: Indication if the url is actively playing or not.
         :rtype: bool

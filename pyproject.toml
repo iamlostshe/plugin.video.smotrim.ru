@@ -1,0 +1,20 @@
+[project]
+name = "plugin-video-smotrim-ru"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = []
+
+[tool.ruff.lint]
+select = ["ALL"]
+ignore = [
+    # Ошибки связанные с кирилицей
+    "RUF001", "RUF002", "RUF003",
+
+    # TODO
+    "TD003", "FIX002",
+
+    # Докстроки
+    "D101", "D102", "D103",
+]

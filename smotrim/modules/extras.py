@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Module: extras
 # Author: Alex Bratchik
 # Created on: 03.04.2021
@@ -11,10 +10,8 @@ import xbmc
 import xbmcgui
 import xbmcvfs
 
-import smotrim.modules.pages as pages
-import smotrim.modules.channels as channels
-import smotrim.modules.channelmenus as channelmenus
-from smotrim import kodiutils, iptvmanager
+from smotrim import iptvmanager, kodiutils
+from smotrim.modules import channelmenus, channels, pages
 
 
 class Extra:
@@ -48,18 +45,18 @@ class Extra:
 
             for i, c in enumerate(cd["data"]):
 
-                chm = self.site.request(self.channelmenu.get_load_url_ext(c['id'], 1, 0), output="json")
+                chm = self.site.request(self.channelmenu.get_load_url_ext(c["id"], 1, 0), output="json")
 
                 if ("data" in chm) and (len(chm["data"]) > 0):
-                    xbmc.log("Channel %s has non-empty menu, keep" % c['id'], xbmc.LOGDEBUG)
+                    xbmc.log("Channel %s has non-empty menu, keep" % c["id"], xbmc.LOGDEBUG)
                     cd_data.append(c)
-                elif (len(ch_live) > 0) and any(ch['ch_id'] == c['id'] for ch in ch_live):
-                    xbmc.log("Channel %s has live stream, keep" % c['id'], xbmc.LOGDEBUG)
+                elif (len(ch_live) > 0) and any(ch["ch_id"] == c["id"] for ch in ch_live):
+                    xbmc.log("Channel %s has live stream, keep" % c["id"], xbmc.LOGDEBUG)
                     cd_data.append(c)
                 else:
-                    xbmc.log("Channel %s has neither menu nor live stream, hiding" % c['id'], xbmc.LOGDEBUG)
+                    xbmc.log("Channel %s has neither menu nor live stream, hiding" % c["id"], xbmc.LOGDEBUG)
 
-                progressDialog.update(50 + int(i * 50 / len(cd["data"])), self.site.language(30407) % c['title'])
+                progressDialog.update(50 + int(i * 50 / len(cd["data"])), self.site.language(30407) % c["title"])
 
                 if monitor.waitForAbort(1) or progressDialog.iscanceled():
                     break
@@ -80,7 +77,7 @@ class Extra:
     def export_channels(self, progressDialog=None, scale=100):
 
         if xbmcvfs.exists(self.ch_playlist) and self.__is_created_today(self.ch_playlist):
-            with open(self.ch_playlist, "r") as f:
+            with open(self.ch_playlist) as f:
                 return json.load(f)
 
         cd = self.channel.get_data_query()
@@ -91,30 +88,30 @@ class Extra:
             monitor = xbmc.Monitor()
             xbmc.log("Running export channels")
 
-            for i, c in enumerate(cd['data']):
-                doublemap, url = self.channelmenu.get_channel_live_double(c['id'])
+            for i, c in enumerate(cd["data"]):
+                doublemap, url = self.channelmenu.get_channel_live_double(c["id"])
 
                 if url:
 
-                    ch = {'id': "smotrim_%sd%s" % (c['id'], doublemap['double_id']),
-                          'ch_id': c['id'],
-                          'double_id': doublemap['double_id'],
-                          'name': c['title'],
-                          'logo': self.channel.get_pic_from_id(c['picId'], "lw"),
-                          'stream': self.site.prepare_url(url),
-                          'radio': c['type'] == "audio"
+                    ch = {"id": "smotrim_%sd%s" % (c["id"], doublemap["double_id"]),
+                          "ch_id": c["id"],
+                          "double_id": doublemap["double_id"],
+                          "name": c["title"],
+                          "logo": self.channel.get_pic_from_id(c["picId"], "lw"),
+                          "stream": self.site.prepare_url(url),
+                          "radio": c["type"] == "audio",
                           }
 
                     chs.append(ch)
 
                     xbmc.log("Export channel %s:%s completed successfully" %
-                             (c['id'], c['title'].encode('utf-8', 'ignore')))
+                             (c["id"], c["title"].encode("utf-8", "ignore")))
                 else:
                     xbmc.log("Export channel %s:%s live stream not found, skipping ..." %
-                             (c['id'], c['title'].encode('utf-8', 'ignore')))
+                             (c["id"], c["title"].encode("utf-8", "ignore")))
 
-                if not (progressDialog is None):
-                    progressDialog.update(int(i * scale / len(cd["data"])), self.site.language(30408) % c['title'])
+                if progressDialog is not None:
+                    progressDialog.update(int(i * scale / len(cd["data"])), self.site.language(30408) % c["title"])
 
                 if monitor.waitForAbort(1) or (progressDialog and progressDialog.iscanceled()):
                     break
@@ -122,11 +119,10 @@ class Extra:
             if monitor.abortRequested() or (progressDialog and progressDialog.iscanceled()):
                 xbmc.log("Channel export cancelled by user action")
                 return []
-            else:
-                with open(self.ch_playlist, "w") as f:
-                    json.dump(chs, f)
+            with open(self.ch_playlist, "w") as f:
+                json.dump(chs, f)
 
-                xbmc.log("Channel export complete")
+            xbmc.log("Channel export complete")
         else:
             xbmc.log("Could not load channel list")
 
@@ -135,7 +131,7 @@ class Extra:
     def export_tv_guide(self):
 
         if xbmcvfs.exists(self.tv_guide) and self.__is_created_today(self.tv_guide):
-            with open(self.tv_guide, "r") as f:
+            with open(self.tv_guide) as f:
                 return json.load(f)
 
         xbmc.log("Start export of the channel TV guide")
@@ -144,39 +140,39 @@ class Extra:
 
         monitor = xbmc.Monitor()
 
-        with open(self.ch_playlist, "r") as f:
+        with open(self.ch_playlist) as f:
             chs = json.load(f)
 
         for ch in chs:
 
-            xbmc.log("Load program for the channel %s" % ch['id'])
+            xbmc.log("Load program for the channel %s" % ch["id"])
 
-            programs = self.channelmenu.get_channel_tvguide(str(ch['ch_id']), ch['double_id'])
+            programs = self.channelmenu.get_channel_tvguide(str(ch["ch_id"]), ch["double_id"])
 
             for p in programs:
                 ptitle = ""
                 try:
                     pdesc = ""
-                    if p['brand']:
-                        ptitle = p['brand'].get('title')
-                        pdesc = p['brand'].get('anons')
+                    if p["brand"]:
+                        ptitle = p["brand"].get("title")
+                        pdesc = p["brand"].get("anons")
                     else:
-                        ptitle = p['title']
+                        ptitle = p["title"]
 
-                    startdate = self.__format_date(p['realDateStart'])
-                    enddate = self.__format_date(p['realDateEnd'])
+                    startdate = self.__format_date(p["realDateStart"])
+                    enddate = self.__format_date(p["realDateEnd"])
 
                     if startdate and enddate:
-                        epgs[ch['id']].append({'start': self.__format_date(p['realDateStart']),
-                                               'stop': self.__format_date(p['realDateEnd']),
-                                               'title': str(ptitle),
-                                               'description': str(pdesc),
-                                               'image': pages.get_pic_from_element(p, "lw"),
-                                               'subtitle': p['episode']['title'] if p['episode'] else ""
+                        epgs[ch["id"]].append({"start": self.__format_date(p["realDateStart"]),
+                                               "stop": self.__format_date(p["realDateEnd"]),
+                                               "title": str(ptitle),
+                                               "description": str(pdesc),
+                                               "image": pages.get_pic_from_element(p, "lw"),
+                                               "subtitle": p["episode"]["title"] if p["episode"] else "",
                                                })
 
 
-                except Exception as e:
+                except Exception:
                     xbmc.log("Program [%s] ignored due to unexpected data format returned by server" %
                              ptitle, xbmc.LOGDEBUG)
 
@@ -205,15 +201,14 @@ class Extra:
     def __format_date(self, s):
         if s:
             return "%s-%s-%sT%s:%s:%s+03:00" % (s[6:10], s[3:5], s[0:2], s[11:13], s[14:16], s[17:19])
-        else:
-            return ""
+        return ""
 
     def send_channels(self):
-        if 'port' in self.site.params:
+        if "port" in self.site.params:
             iptvmanager.IPTVManager(self).send_channels()
 
     def send_epg(self):
-        if 'port' in self.site.params:
+        if "port" in self.site.params:
             iptvmanager.IPTVManager(self).send_epg()
 
     @staticmethod

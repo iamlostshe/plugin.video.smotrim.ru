@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Module: channels
 # Author: Alex Bratchik
 # Created on: 03.04.2021
@@ -7,8 +6,8 @@ import os
 
 import xbmc
 
-import smotrim.modules.pages as pages
 from smotrim.kodiutils import get_url
+from smotrim.modules import pages
 
 
 class Channel(pages.Page):
@@ -23,7 +22,7 @@ class Channel(pages.Page):
                                                                    action="tvguide",
                                                                    context="channels",
                                                                    url=self.site.url),
-                                                       info={'plot': self.site.language(30224)}))
+                                                       info={"plot": self.site.language(30224)}))
 
         self.cache_expire = 0
 
@@ -31,16 +30,15 @@ class Channel(pages.Page):
         xbmc.executebuiltin("ActivateWindow(TVGuide,,'%s')" % self.site.url)
 
     def get_load_url(self):
-        return get_url(self.site.api_url + '/geo')
+        return get_url(self.site.api_url + "/geo")
 
     def get_data_query(self):
         if self.is_cache_available():
             return self.get_data_from_cache()
-        else:
-            geo = self.site.request(self.get_load_url(), output="json")
+        geo = self.site.request(self.get_load_url(), output="json")
 
-            return {'metadata': geo.get('metadata', {}),
-                    'data': geo['data'].get('channels', [])}
+        return {"metadata": geo.get("metadata", {}),
+                "data": geo["data"].get("channels", [])}
 
     def create_root_li(self):
         return self.create_menu_li("channels", 30400, is_folder=True, is_playable=True,
@@ -49,26 +47,26 @@ class Channel(pages.Page):
                                                content="files",
                                                cache_expire="0",
                                                url=self.site.url),
-                                   info={'plot': self.site.language(30400)})
+                                   info={"plot": self.site.language(30400)})
 
     def create_element_li(self, element):
-        return {'id': element['id'],
-                'label': element['title'],
-                'is_folder': True,
-                'is_playable': False,
-                'url': get_url(self.site.url,
+        return {"id": element["id"],
+                "label": element["title"],
+                "is_folder": True,
+                "is_playable": False,
+                "url": get_url(self.site.url,
                                action="load",
                                context="channelmenus",
-                               channels=element['id'],
+                               channels=element["id"],
                                cache_expire="0",
-                               title=element['title'],
+                               title=element["title"],
                                content="files",
                                url=self.site.url),
-                'info': {'plot': element['title']},
-                'art': {'thumb': self.get_pic_from_id(element['picId'], "lw"),
-                        'icon': self.get_pic_from_id(element['picId'], "lw"),
-                        'fanart': self.get_pic_from_id(element['picId'], "hd"),
-                        'poster': self.get_pic_from_id(element['picId'], "it")}
+                "info": {"plot": element["title"]},
+                "art": {"thumb": self.get_pic_from_id(element["picId"], "lw"),
+                        "icon": self.get_pic_from_id(element["picId"], "lw"),
+                        "fanart": self.get_pic_from_id(element["picId"], "hd"),
+                        "poster": self.get_pic_from_id(element["picId"], "it")},
                 }
 
     def add_context_menu(self, category):

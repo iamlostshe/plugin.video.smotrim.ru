@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # Module: searches
 # Author: Alex Bratchik
 # Created on: 03.04.2021
@@ -8,8 +7,8 @@ import os
 
 import xbmc
 
-import smotrim.modules.pages as pages
 from smotrim.kodiutils import get_url
+from smotrim.modules import pages
 
 
 class Search(pages.Page):
@@ -21,7 +20,7 @@ class Search(pages.Page):
     def create_root_li(self):
         return self.create_menu_li("search", 30010, is_folder=True, is_playable=False,
                                    url=self.get_nav_url(),
-                                   info={'plot': self.site.language(30011)})
+                                   info={"plot": self.site.language(30011)})
 
     def preload(self):
         self.list_items.append(self.create_menu_li("search", 30012,
@@ -35,47 +34,47 @@ class Search(pages.Page):
         self.site.context_title = self.site.language(30010)
 
     def create_element_li(self, element):
-        return {'id': element['id'],
-                'label': "[B]%s[/B]" % element['title'],
-                'is_folder': True,
-                'is_playable': False,
-                'url': get_url(self.site.url,
+        return {"id": element["id"],
+                "label": "[B]%s[/B]" % element["title"],
+                "is_folder": True,
+                "is_playable": False,
+                "url": get_url(self.site.url,
                                action="search",
                                context="brands",
-                               search=element['title'],
+                               search=element["title"],
                                url=self.site.url),
-                'info': {'plot': "%s [%s]" % (self.site.language(30010), element['title'])},
-                'art': {'icon': self.site.get_media("search.png"),
-                        'fanart': self.site.get_media("background.jpg")}
+                "info": {"plot": "%s [%s]" % (self.site.language(30010), element["title"])},
+                "art": {"icon": self.site.get_media("search.png"),
+                        "fanart": self.site.get_media("background.jpg")},
                 }
 
     def get_data_query(self):
         if os.path.exists(self.search_history_file):
             self.limit = self.get_limit_setting()
-            with open(self.search_history_file, 'r+') as f:
+            with open(self.search_history_file, "r+") as f:
                 sh = json.load(f)
-                return {'data': sh[:self.limit]}
+                return {"data": sh[:self.limit]}
         else:
-            return {'data': []}
+            return {"data": []}
 
     def create_new_search_element(self):
-        return {'id': 'newsearch',
-                'title': "[COLOR=FF00FF00]%s[/COLOR]" % self.site.language(30012),
-                'is_new': "true"}
+        return {"id": "newsearch",
+                "title": "[COLOR=FF00FF00]%s[/COLOR]" % self.site.language(30012),
+                "is_new": "true"}
 
     def save_to_history(self, keyword):
-        sh = self.get_data_query().get('data',[])
-        pos = next((i for i, item in enumerate(sh) if item['title'] == keyword), -1)
+        sh = self.get_data_query().get("data",[])
+        pos = next((i for i, item in enumerate(sh) if item["title"] == keyword), -1)
         if pos < 0:
-            index = sh[0]['id'] + 1 if len(sh) > 0 else 1
-            sh.insert(0, {'id': index,
-                          'title': keyword,
-                          'is_new': "false"})
+            index = sh[0]["id"] + 1 if len(sh) > 0 else 1
+            sh.insert(0, {"id": index,
+                          "title": keyword,
+                          "is_new": "false"})
         else:
             sh.insert(0, sh[pos])
             sh.pop(pos + 1)
 
-        with open(self.search_history_file, 'w+') as f:
+        with open(self.search_history_file, "w+") as f:
             json.dump(sh, f)
 
     def get_nav_url(self, offset=0):

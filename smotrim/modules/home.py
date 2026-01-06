@@ -1,19 +1,12 @@
-# -*- coding: utf-8 -*-
 # Module: home
 # Author: Alex Bratchik
 # Created on: 03.04.2021
 # License: GPL v.3 https://www.gnu.org/copyleft/gpl.html
 import xbmc
 
-import smotrim.modules.pages as pages
-import smotrim.modules.searches as searches
-import smotrim.modules.podcasts as podcasts
-import smotrim.modules.boxes as boxes
-import smotrim.modules.brands as brands
-import smotrim.modules.articles as articles
-import smotrim.modules.channels as channels
 import smotrim.modules.history as histories
 from smotrim.kodiutils import get_url
+from smotrim.modules import articles, boxes, brands, channels, pages, podcasts, searches
 
 
 class Home(pages.Page):
@@ -39,7 +32,7 @@ class Home(pages.Page):
         if self.site.addon.getSettingBool("addhistory"):
             home_menu.append(history.create_root_li())
 
-        return {'data': home_menu}
+        return {"data": home_menu}
 
     def set_context_title(self):
         self.site.context_title = self.site.language(30300)
@@ -47,7 +40,7 @@ class Home(pages.Page):
     def create_fav_li(self):
         return self.create_menu_li("favorites", 30023, is_folder=False, is_playable=False,
                                    url=get_url(self.site.url, action="favorites", context="home", url=self.site.url),
-                                   info={'plot': self.site.language(30023)})
+                                   info={"plot": self.site.language(30023)})
 
     def favorites(self):
         xbmc.executebuiltin("ActivateWindow(Favourites)")
