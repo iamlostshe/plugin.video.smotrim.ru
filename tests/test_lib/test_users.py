@@ -1,8 +1,3 @@
-# Module: test_users
-# Author: Alex Bratchik
-# Created on: 03.04.2021
-# License: GPL v.3 https://www.gnu.org/copyleft/gpl.html
-
 import os
 import re
 import shutil
@@ -97,9 +92,9 @@ class UsersTestCase(unittest.TestCase):
         with open(self.resource_file) as f:
             lines = f.readlines()
             for index, line in enumerate(lines):
-                if "#%s" % id in line:
+                if f"#{id}" in line:
                     return re.findall(r"(?<=msgstr.).*", lines[index + 2])[0][1:-1]
-        self.fail("Fail to find resource string %s" % id)
+        self.fail(f"Fail to find resource string {id}")
 
 
 if __name__ == "__main__":

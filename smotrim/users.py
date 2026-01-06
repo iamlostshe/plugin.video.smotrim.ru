@@ -1,7 +1,3 @@
-# Module: users
-# Author: Alex Bratchik
-# Created on: 03.04.2021
-# License: GPL v.3 https://www.gnu.org/copyleft/gpl.html
 import os
 import pickle
 import re
@@ -16,7 +12,7 @@ NEVER = 100 * 1000 * 60 * 60 * 24
 
 
 class User:
-    def __init__(self):
+    def __init__(self) -> None:
         self.phone = ""
         self.domain = ""
         self._geo = {}
@@ -174,14 +170,20 @@ class User:
         except KeyError:
             return ""
 
-    def get_headers(self, type="dict"):
-        if type == "dict":
+    def get_headers(self, type_: str | None = "dict") -> dict[str, str] | str:
+        if type_ == "dict":
             return self._headers
-        if type == "str":
-            return "&".join(str(key) + "=" + str(value) for key, value in self._headers.items())
+        if type_ == "str":
+            return "&".join(
+                str(key) + "=" + str(value) for key, value in self._headers.items()
+            )
         return ""
 
-    def get_http(self, url, headers=None, stream=False):
+    def get_http(
+        self,
+        url: str,
+        headers: dict[str, str] | None = None,
+        stream: bool | None = False):
         self._set_host(url)
         if headers is None:
             headers = self._headers
@@ -190,11 +192,11 @@ class User:
             return self.session.get(url, headers=headers, stream=True)
         return self.session.get(url, headers=headers)
 
-    def _set_host(self, url):
+    def _set_host(self, url: str) -> None:
         host = url.split("://")[1].split("/")[0]
         self._headers.update({"Host": host})
 
-    def _logout(self):
+    def _logout(self) -> None:
         if "smid" in self.session.cookies:
             self.session.cookies.clear(domain=self.domain, path="/", name="smid")
         if "usgr" in self.session.cookies:

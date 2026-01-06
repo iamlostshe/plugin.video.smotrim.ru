@@ -1,8 +1,3 @@
-# Module: pages
-# Author: Alex Bratchik
-# Created on: 03.04.2021
-# License: GPL v.3 https://www.gnu.org/copyleft/gpl.html
-
 import hashlib
 import json
 import os
@@ -30,7 +25,7 @@ MAXRECORDS = 9999
 
 class Page:
 
-    def __init__(self, site):
+    def __init__(self, site) -> None:
         self.site = site
         self.data = {}
         self.params = site.params
@@ -360,7 +355,7 @@ class Page:
         except KeyError:
             return ""
 
-    def get_person_thumbnail(self, name):
+    def get_person_thumbnail(self, name: str):
         name_hash = hashlib.md5(name.encode())
         return "%s/p%s.jpg" % (self.site.thumb_path, name_hash.hexdigest())
 
@@ -418,7 +413,7 @@ class Page:
         """
 
     def add_context_menu(self, category):
-        """This function can be overriden to add context menu items
+        """This function can be overriden to add context menu items.
         @param category:
         @return:
         """
