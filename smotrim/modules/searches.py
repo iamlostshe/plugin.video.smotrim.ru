@@ -9,8 +9,8 @@ from smotrim.modules import pages
 
 class Search(pages.Page):
 
-    def __init__(self, site):
-        super(Search, self).__init__(site)
+    def __init__(self, site) -> None:
+        super().__init__(site)
         self.search_history_file = os.path.join(self.site.data_path, "search_history.json")
 
     def create_root_li(self):
@@ -18,7 +18,7 @@ class Search(pages.Page):
                                    url=self.get_nav_url(),
                                    info={"plot": self.site.language(30011)})
 
-    def preload(self):
+    def preload(self) -> None:
         self.list_items.append(self.create_menu_li("search", 30012,
                                                    is_folder=False, is_playable=False,
                                                    url=get_url(self.site.url,
@@ -26,12 +26,12 @@ class Search(pages.Page):
                                                                context="brands",
                                                                url=self.site.url)))
 
-    def set_context_title(self):
+    def set_context_title(self) -> None:
         self.site.context_title = self.site.language(30010)
 
     def create_element_li(self, element):
         return {"id": element["id"],
-                "label": "[B]%s[/B]" % element["title"],
+                "label": "[B]{}[/B]".format(element["title"]),
                 "is_folder": True,
                 "is_playable": False,
                 "url": get_url(self.site.url,
@@ -39,7 +39,7 @@ class Search(pages.Page):
                                context="brands",
                                search=element["title"],
                                url=self.site.url),
-                "info": {"plot": "%s [%s]" % (self.site.language(30010), element["title"])},
+                "info": {"plot": "{} [{}]".format(self.site.language(30010), element["title"])},
                 "art": {"icon": self.site.get_media("search.png"),
                         "fanart": self.site.get_media("background.jpg")},
                 }
@@ -55,10 +55,10 @@ class Search(pages.Page):
 
     def create_new_search_element(self):
         return {"id": "newsearch",
-                "title": "[COLOR=FF00FF00]%s[/COLOR]" % self.site.language(30012),
+                "title": f"[COLOR=FF00FF00]{self.site.language(30012)}[/COLOR]",
                 "is_new": "true"}
 
-    def save_to_history(self, keyword):
+    def save_to_history(self, keyword) -> None:
         sh = self.get_data_query().get("data",[])
         pos = next((i for i, item in enumerate(sh) if item["title"] == keyword), -1)
         if pos < 0:
@@ -76,16 +76,15 @@ class Search(pages.Page):
     def get_nav_url(self, offset=0):
         return get_url(self.site.url, action="load", context="searches", url=self.site.url)
 
-    def add_context_menu(self, category):
+    def add_context_menu(self, category) -> None:
         self.context_menu_items.append((self.site.language(30350),
-                                        "RunPlugin(%s)" %
-                                        get_url(self.site.url,
+                                        "RunPlugin({})".format(get_url(self.site.url,
                                                 action="clear_history",
                                                 context="searches",
-                                                url=self.site.url)))
+                                                url=self.site.url))))
 
-    def clear_history(self):
+    def clear_history(self) -> None:
         if os.path.exists(self.search_history_file):
             os.remove(self.search_history_file)
             url = self.get_nav_url(offset=0)
-            xbmc.executebuiltin("Container.Update(%s)" % url)
+            xbmc.executebuiltin(f"Container.Update({url})")

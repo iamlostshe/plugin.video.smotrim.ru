@@ -24,7 +24,7 @@ class User:
 
         self._cookies_file = ""
 
-    def init_session(self, site):
+    def init_session(self, site) -> None:
         self._site = site
 
         self.phone = site.addon.getSetting("phone")
@@ -43,7 +43,8 @@ class User:
             "Sec-Fetch-Site": "none",
             "Sec-Fetch-User": "?1",
             "Sec-GPC": "1",
-            "Upgrade-Insecure-Requests": "1"}
+            "Upgrade-Insecure-Requests": "1",
+        }
 
         # Load saved cookies
         self._cookies_file = os.path.join(self._site.data_path, "cookies.dat")
@@ -51,11 +52,14 @@ class User:
 
         # If UID not in cookies, request it
         if "ngx_uid" not in self.session.cookies:
-            xbmc.log("Cookie file not found or missing UID, requesting from %s" % self.domain, xbmc.LOGDEBUG)
-            self.get_http("https://%s" % self.domain)
+            xbmc.log(
+                f"Cookie file not found or missing UID, requesting from {self.domain}",
+                xbmc.LOGDEBUG,
+            )
+            self.get_http(f"https://{self.domain}")
             self._save_cookies()
 
-    def watch(self, site, context=""):
+    def watch(self, site, context="") -> None:
         """:param site: Smotrim
         :return:
         @param site: assumed Smotrim class
@@ -68,20 +72,18 @@ class User:
 
         self.session.close()
 
-    def _login(self):
-
+    def _login(self) -> bool:
         if not self.phone:
             self._logout()
             return True
         if "phone" in self.session.cookies:
-            if not (self.session.cookies["phone"] == self.phone):
+            if self.session.cookies["phone"] != self.phone:
                 # phone has changed, logout
                 self._logout()
         else:
-            self.session.cookies.set("phone", self.phone,
-                                     expires=NEVER,
-                                     domain=self._site.id,
-                                     path="/")
+            self.session.cookies.set(
+                "phone", self.phone, expires=NEVER, domain=self._site.id, path="/"
+            )
             self._save_cookies()
 
         if self._is_login():
@@ -91,28 +93,34 @@ class User:
 
         # Set region
         self.load_geo()
-        self.session.cookies.set("region", self.get_region(), expires=NEVER, domain=self.domain, path="/")
-        xbmc.log("Region is %s" % self.session.cookies["region"], xbmc.LOGDEBUG)
+        self.session.cookies.set(
+            "region", self.get_region(), expires=NEVER, domain=self.domain, path="/"
+        )
+        xbmc.log("Region is {}".format(self.session.cookies["region"]), xbmc.LOGDEBUG)
 
         # Set headers
-        headers = ({"User-Agent": USER_AGENT,
-                    "Accept": "*/*",
-                    "Accept-Encoding": "gzip, deflate, br",
-                    "Accept-Language": "en-US,en;q=0.5",
-                    "Connection": "keep-alive",
-                    "Host": self.domain,
-                    "Referer": "https://%s/" % self.domain,
-                    "Sec-Fetch-Dest": "empty",
-                    "Sec-Fetch-Mode": "same-origin",
-                    "Sec-Fetch-Site": "same-origin",
-                    "Sec-GPC": "1",
-                    "X-Requested-With": "XMLHTTPRequest",
-                    })
+        headers = {
+            "User-Agent": USER_AGENT,
+            "Accept": "*/*",
+            "Accept-Encoding": "gzip, deflate, br",
+            "Accept-Language": "en-US,en;q=0.5",
+            "Connection": "keep-alive",
+            "Host": self.domain,
+            "Referer": f"https://{self.domain}/",
+            "Sec-Fetch-Dest": "empty",
+            "Sec-Fetch-Mode": "same-origin",
+            "Sec-Fetch-Site": "same-origin",
+            "Sec-GPC": "1",
+            "X-Requested-With": "XMLHTTPRequest",
+        }
 
         # Try to login - first load the form
         resp = self.session.get(login_url, headers=headers)
         if resp.status_code != 200:
-            xbmc.log("Couldn't load the login page %s, error %a" % (login_url, resp.status_code), xbmc.LOGDEBUG)
+            xbmc.log(
+                f"Couldn't load the login page {login_url}, error {resp.status_code!a}",
+                xbmc.LOGDEBUG,
+            )
             self._logout()
             self._save_cookies()
             return False
@@ -122,19 +130,21 @@ class User:
         # Read the token
         token = self._get_token(resp.text)
         if token == "":
-            xbmc.log("Failed to retrieve the secure token from the login page %s" % login_url)
+            xbmc.log(
+                f"Failed to retrieve the secure token from the login page {login_url}"
+            )
             self._logout()
             return False
 
-        xbmc.log("Token retrieved successfully: % s" % token)
+        xbmc.log(f"Token retrieved successfully: {token: }")
 
-        headers.update({"Origin": "https://%s" % self.domain,
-                        "Referer": login_url})
+        headers.update({"Origin": f"https://{self.domain}", "Referer": login_url})
 
-        self.session.post(login_url,
-                          files={"phone": (None, self.phone),
-                                 "_token": (None, token)},
-                          headers=headers)
+        self.session.post(
+            login_url,
+            files={"phone": (None, self.phone), "_token": (None, token)},
+            headers=headers,
+        )
 
         auth_code = xbmcgui.Dialog().numeric(0, self._site.language(30500), "")
 
@@ -143,16 +153,24 @@ class User:
             self._save_cookies()
             return False
 
-        xbmc.log("Send the code %s for authorization to %s" % (auth_code, self.domain), xbmc.LOGDEBUG)
+        xbmc.log(
+            f"Send the code {auth_code} for authorization to {self.domain}",
+            xbmc.LOGDEBUG,
+        )
 
-        self.session.post(login_url,
-                          files={"code": (None, auth_code),
-                                 "phone": (None, self.phone)},
-                          headers=headers)
+        self.session.post(
+            login_url,
+            files={"code": (None, auth_code), "phone": (None, self.phone)},
+            headers=headers,
+        )
 
         if self._is_login():
-            xbmc.log("User login SUCCESS, id=%s, usgr=%s" %
-                     (self.session.cookies["smid"], self.session.cookies["usgr"]), xbmc.LOGDEBUG)
+            xbmc.log(
+                "User login SUCCESS, id={}, usgr={}".format(
+                    self.session.cookies["smid"], self.session.cookies["usgr"]
+                ),
+                xbmc.LOGDEBUG,
+            )
             self._save_cookies()
             return True
 
@@ -183,7 +201,8 @@ class User:
         self,
         url: str,
         headers: dict[str, str] | None = None,
-        stream: bool | None = False):
+        stream: bool | None = False,
+    ):
         self._set_host(url)
         if headers is None:
             headers = self._headers
@@ -205,11 +224,11 @@ class User:
     def _is_login(self):
         return ("smid" in self.session.cookies) and ("usgr" in self.session.cookies)
 
-    def _save_cookies(self):
+    def _save_cookies(self) -> None:
         with open(self._cookies_file, "wb") as f:
             pickle.dump(self.session.cookies, f)
 
-    def _load_cookies(self):
+    def _load_cookies(self) -> None:
         if os.path.exists(self._cookies_file):
             with open(self._cookies_file, "rb") as f:
                 cj = pickle.load(f)

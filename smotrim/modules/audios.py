@@ -3,8 +3,8 @@ from smotrim.modules import pages
 
 
 class Audio(pages.Page):
-    def __init__(self, site):
-        super(Audio, self).__init__(site)
+    def __init__(self, site) -> None:
+        super().__init__(site)
         self.cache_enabled = True
         self.context = "audios"
 
@@ -26,7 +26,7 @@ class Audio(pages.Page):
                        offset=self.offset,
                        sort="dasc")
 
-    def set_context_title(self):
+    def set_context_title(self) -> None:
         if "data" in self.data:
             self.site.context_title = self.data["data"][0]["brandTitle"] \
                 if len(self.data["data"]) > 0 else self.site.language(30040)
@@ -70,7 +70,7 @@ class Audio(pages.Page):
                          "episode": element["series"],
                          "dateadded": self.format_date(element["datePub"]),
                          "duration": element["duration"],
-                         "plot": "%s[CR]%s" % (element["title"], element["anons"])},
+                         "plot": "{}[CR]{}".format(element["title"], element["anons"])},
                 "art": {"fanart": pages.get_pic_from_element(element, "hd"),
                         "icon": pages.get_pic_from_element(element, "lw"),
                         "thumb": pages.get_pic_from_element(element, "lw"),
@@ -78,7 +78,7 @@ class Audio(pages.Page):
                         },
                 }
 
-    def enrich_info_tag(self, list_item, episode, brand):
+    def enrich_info_tag(self, list_item, episode, brand) -> None:
         list_item.setInfo("music", {"title": episode["combinedTitle"],
                                     "mediatype": "musicvideo",
                                     "plot": episode.get("anons"),
@@ -86,7 +86,7 @@ class Audio(pages.Page):
                                     "genre": brand.get("genre"),
                                     "rating": brand.get("rank")})
 
-    def play(self):
+    def play(self) -> None:
         spath = self.params.get("spath")
 
         this_audio, next_audio = self.get_this_and_next_episode(self.params.get("audios"))
@@ -108,9 +108,9 @@ class Audio(pages.Page):
                        spath=spath,
                        url=self.site.url)
 
-    def get_cache_filename_prefix(self):
+    def get_cache_filename_prefix(self) -> str:
         if "brands" in self.params:
-            return "brand_audios_%s" % self.params.get("brands")
+            return "brand_audios_{}".format(self.params.get("brands"))
         if "rubrics" in self.params:
-            return "podcast_audios_%s" % self.params.get("rubrics")
+            return "podcast_audios_{}".format(self.params.get("rubrics"))
         return "audios"

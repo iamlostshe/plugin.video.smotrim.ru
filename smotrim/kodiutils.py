@@ -12,18 +12,18 @@ import xbmc
 import xbmcvfs
 
 
-def show_error_message(msg):
+def show_error_message(msg) -> None:
     xbmc.log(msg, xbmc.LOGDEBUG)
-    xbmc.executebuiltin("XBMC.Notification(%s,%s, %s)" % ("ERROR", msg, str(3 * 1000)))
+    xbmc.executebuiltin("XBMC.Notification({},{}, {})".format("ERROR", msg, str(3 * 1000)))
 
 
 def kodi_version():
-    """Returns full Kodi version as string"""
+    """Returns full Kodi version as string."""
     return xbmc.getInfoLabel("System.BuildVersion").split(" ")[0]
 
 
 def kodi_version_major():
-    """Returns major Kodi version as integer"""
+    """Returns major Kodi version as integer."""
     return int(kodi_version().split(".")[0])
 
 
@@ -48,7 +48,7 @@ def get_sec_since_last_mod(spath):
     return time.time() - get_file_timestamp(spath)
 
 
-def remove_files_by_pattern(pattern):
+def remove_files_by_pattern(pattern) -> None:
     for f in glob.glob(pattern):
         os.remove(f)
 
@@ -56,25 +56,24 @@ def remove_files_by_pattern(pattern):
 def clean_html(raw_html):
     try:
         cleanr = re.compile("<.*?>|&([a-z0-9]+|#[0-9]{1,6}|#x[0-9a-f]{1,6});")
-        cleantext = re.sub(cleanr, "", raw_html)
-        return cleantext
+        return re.sub(cleanr, "", raw_html)
     except TypeError:
         return raw_html
 
 
-def upnext_signal(sender, next_info):
-    """Send a signal to Kodi using JSON RPC"""
+def upnext_signal(sender, next_info) -> None:
+    """Send a signal to Kodi using JSON RPC."""
     data = [to_unicode(b64encode(dumps(next_info).encode()))]
     notify(sender=sender + ".SIGNAL", message="upnext_data", data=data)
 
 
-def notify(sender, message, data):
-    """Send a notification to Kodi using JSON RPC"""
-    result = jsonrpc(method="JSONRPC.NotifyAll", params=dict(
-        sender=sender,
-        message=message,
-        data=data,
-    ))
+def notify(sender, message, data) -> bool:
+    """Send a notification to Kodi using JSON RPC."""
+    result = jsonrpc(method="JSONRPC.NotifyAll", params={
+        "sender": sender,
+        "message": message,
+        "data": data,
+    })
     if result.get("result") != "OK":
         xbmc.log("Failed to send notification: " + result.get("error").get("message"), xbmc.LOGDEBUG)
         return False
@@ -82,7 +81,7 @@ def notify(sender, message, data):
 
 
 def jsonrpc(**kwargs):
-    """Perform JSONRPC calls"""
+    """Perform JSONRPC calls."""
     if kwargs.get("id") is None:
         kwargs.update(id=0)
     if kwargs.get("jsonrpc") is None:
@@ -91,7 +90,7 @@ def jsonrpc(**kwargs):
 
 
 def to_unicode(text, encoding="utf-8", errors="strict"):
-    """Force text to unicode"""
+    """Force text to unicode."""
     if isinstance(text, bytes):
         return text.decode(encoding, errors=errors)
     return text

@@ -3,8 +3,8 @@ from smotrim.modules import pages
 
 
 class Podcast(pages.Page):
-    def __init__(self, site):
-        super(Podcast, self).__init__(site)
+    def __init__(self, site) -> None:
+        super().__init__(site)
         self.cache_enabled = True
         self.context = "podcasts"
 
@@ -18,7 +18,7 @@ class Podcast(pages.Page):
                                                url=self.site.url),
                                    info={"plot": self.site.language(30070)})
 
-    def set_context_title(self):
+    def set_context_title(self) -> None:
         self.site.context_title = self.site.language(30070)
 
     def get_load_url(self):
@@ -29,7 +29,7 @@ class Podcast(pages.Page):
     def create_element_li(self, element):
         bp = self.parse_body(element, "anons")
         return {"id": element["id"],
-                "label": "[B]%s[/B]" % element["title"],
+                "label": "[B]{}[/B]".format(element["title"]),
                 "is_folder": True,
                 "is_playable": False,
                 "url": get_url(self.site.url,
@@ -57,7 +57,7 @@ class Podcast(pages.Page):
                 }
 
     def get_element_by_id(self, id):
-        response = self.site.request(get_url("%s/rubrics/%s" % (self.site.api_url, str(id))), "json")
+        response = self.site.request(get_url(f"{self.site.api_url}/rubrics/{id!s}"), "json")
         return response.get("data", {})
 
     def get_nav_url(self, offset=0):

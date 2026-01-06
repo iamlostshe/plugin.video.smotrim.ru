@@ -13,7 +13,7 @@ RSSUPDATEINTERVAL = 30
 
 class RSSBuilder:
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.et = None
 
     def create_RSS(self):
@@ -40,9 +40,9 @@ class RSSBuilder:
             self._add_element("pubDate", it, txt=pubdate)
         return it
 
-    def add_news_to_rss(self, site, feed):
+    def add_news_to_rss(self, site, feed) -> None:
         rssfeeds = os.path.join(xbmcvfs.translatePath("special://userdata"), RSSFEEDS)
-        rssurl = "http://%s:%s/articles" % (SERVER_ADDR, site.server_port)
+        rssurl = f"http://{SERVER_ADDR}:{site.server_port}/articles"
         rssfeedsxml = self._load_xml_from_file(rssfeeds)
 
         if feed:
@@ -64,7 +64,7 @@ class RSSBuilder:
             set_1.attrib["id"] = "1"
         return set_1
 
-    def _add_rss_feed(self, rssfeedsxml, rssurl):
+    def _add_rss_feed(self, rssfeedsxml, rssurl) -> bool:
         set_1 = self._get_or_add_set_1(rssfeedsxml)
         feeds = set_1.findall("feed")
         for f in feeds:
@@ -75,7 +75,7 @@ class RSSBuilder:
         feed.attrib["updateinterval"] = str(RSSUPDATEINTERVAL)
         return True
 
-    def _remove_rss_feed(self, rssfeedsxml, rssurl):
+    def _remove_rss_feed(self, rssfeedsxml, rssurl) -> bool:
         set_1 = self._get_or_add_set_1(rssfeedsxml)
         feeds = set_1.findall("feed")
         for f in feeds:
@@ -101,7 +101,7 @@ class RSSBuilder:
         return ET.fromstring("<rssfeeds />")
 
     @staticmethod
-    def _save_pretty_xml(element, output_xml):
+    def _save_pretty_xml(element, output_xml) -> None:
         xml_string = minidom.parseString(ET.tostring(element)).toprettyxml()
         xml_string = os.linesep.join(
             [s for s in xml_string.splitlines() if s.strip() and "<?xml" not in s])
@@ -113,7 +113,7 @@ class RSSBuilder:
     @staticmethod
     def _backup_file(fpath):
         if xbmcvfs.exists(fpath):
-            fpathbak = "%s.bak" % fpath
+            fpathbak = f"{fpath}.bak"
             if xbmcvfs.exists(fpathbak):
                 xbmcvfs.delete(fpathbak)
             return xbmcvfs.copy(fpath, fpathbak)

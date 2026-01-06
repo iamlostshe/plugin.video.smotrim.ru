@@ -2,14 +2,13 @@ import xbmc
 import xbmcgui
 
 from smotrim import rssbuilder, smotrim, users
+from smotrim.kodiutils import clean_html, get_url
 from smotrim.modules import pages
-
-from ..kodiutils import clean_html, get_url
 
 
 class Article(pages.Page):
-    def __init__(self, site):
-        super(Article, self).__init__(site)
+    def __init__(self, site) -> None:
+        super().__init__(site)
         self.context = "articles"
 
     def create_root_li(self):
@@ -17,7 +16,7 @@ class Article(pages.Page):
                                    url=get_url(self.site.url, action="load", context="articles", url=self.site.url),
                                    info={"plot": self.site.language(30301)})
 
-    def set_context_title(self):
+    def set_context_title(self) -> None:
         self.site.context_title = self.site.language(30301)
 
     def get_load_url(self):
@@ -29,8 +28,8 @@ class Article(pages.Page):
     def create_element_li(self, element=None):
         return {"id": element["id"],
                 "is_folder": False,
-                "is_playable": True if element["videos"] else False,
-                "label": "[COLOR=FF00FFFF]%s[/COLOR] %s" % (self.site.language(30302), element["title"])
+                "is_playable": bool(element["videos"]),
+                "label": "[COLOR=FF00FFFF]{}[/COLOR] {}".format(self.site.language(30302), element["title"])
                 if element["videos"] else element["title"],
                 "url": get_url(self.site.url,
                                action="play",
@@ -50,7 +49,7 @@ class Article(pages.Page):
                         },
                 }
 
-    def play(self):
+    def play(self) -> None:
         articles = self.site.request(get_url(self.site.api_url + "/articles/" + self.params["articles"]),
                                      output="json")
         xbmcgui.Dialog().textviewer(articles["data"]["title"], clean_html(articles["data"]["body"]))
@@ -70,7 +69,7 @@ def get_RSS():
     article.limit = 30
     article.data = article.get_data_query()
     site.user.session.close()
-    ch = rb.create_channel(site.language(30022), url="https://%s" % site.domain)
+    ch = rb.create_channel(site.language(30022), url=f"https://{site.domain}")
 
     if "data" in article.data:
         for a in article.data["data"]:

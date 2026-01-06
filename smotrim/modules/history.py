@@ -9,8 +9,8 @@ from smotrim.modules import brands, pages
 
 
 class History(pages.Page):
-    def __init__(self, site):
-        super(History, self).__init__(site)
+    def __init__(self, site) -> None:
+        super().__init__(site)
         self.brand = brands.Brand(self.site)
 
     def get_data_query(self):
@@ -21,9 +21,9 @@ class History(pages.Page):
         cfiles = ((stat[ST_CTIME], path)
                   for stat, path in cfiles if S_ISREG(stat[ST_MODE]))
         elements = {"data": [] }
-        for cdate, path in sorted(cfiles, reverse=True):
+        for _cdate, path in sorted(cfiles, reverse=True):
             with open(path, "r+") as f:
-                xbmc.log("history len = %s" % len(elements["data"]), xbmc.LOGDEBUG)
+                xbmc.log("history len = {}".format(len(elements["data"])), xbmc.LOGDEBUG)
                 if len(elements["data"]) < self.limit:
                     elements["data"].append(json.load(f))
                 else:
@@ -37,7 +37,7 @@ class History(pages.Page):
                                    url=get_url(self.site.url, action="load", context="history", url=self.site.url),
                                    info={"plot": self.site.language(30051)})
 
-    def set_context_title(self):
+    def set_context_title(self) -> None:
         self.site.context_title = self.site.language(30050)
 
     def create_element_li(self, element):

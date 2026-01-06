@@ -27,11 +27,11 @@
         <licence>GPL-3.0-or-later</licence>
         <forum>http://xbmc.ru/forum/showthread.php?t=23431</forum>
         <assets>
-            <icon>icon.png</icon>
-            <fanart>fanart.jpg</fanart>
-            <screenshot>assets/screenshot-01.jpg</screenshot>
-            <screenshot>assets/screenshot-02.jpg</screenshot>
-            <screenshot>assets/screenshot-03.jpg</screenshot>
+            <icon>asets/icon.png</icon>
+            <fanart>asets/fanart.jpg</fanart>
+            <screenshot>resources/screenshot-01.jpg</screenshot>
+            <screenshot>resources/screenshot-02.jpg</screenshot>
+            <screenshot>resources/screenshot-03.jpg</screenshot>
         </assets>
         <source>https://github.com/abratchik/plugin.video.smotrim.ru</source>
     </extension>

@@ -8,17 +8,17 @@ from smotrim.modules import pages, persons
 
 
 class Brand(pages.Page):
-    def __init__(self, site):
+    def __init__(self, site) -> None:
         self.search_text = ""
         self.search_tag = ""
         self.search_person = ""
-        super(Brand, self).__init__(site)
+        super().__init__(site)
         self.TAGS = []
         self.context = "brands"
         with open(os.path.join(self.site.path, "resources/data/tags.json"), "r+") as f:
             self.TAGS = json.load(f)
 
-    def search(self):
+    def search(self) -> None:
         if "search" not in self.params:
             self.search_text = self.site.get_user_input()
             if self.search_text:
@@ -28,18 +28,18 @@ class Brand(pages.Page):
 
                 url = self.get_nav_url(offset=0)
 
-                xbmc.executebuiltin("Container.Update(%s)" % url)
+                xbmc.executebuiltin(f"Container.Update({url})")
                 return
         else:
             self.search_text = self.params["search"]
 
         self.load()
 
-    def search_by_tag(self):
+    def search_by_tag(self) -> None:
         self.search_tag = self.params.get("tags", "")
         self.load()
 
-    def search_by_person(self):
+    def search_by_person(self) -> None:
         self.search_person = self.params.get("persons", "")
         self.cache_enabled = True
         self.load()
@@ -56,8 +56,8 @@ class Brand(pages.Page):
         @param cache_expire: number of seconds for cache to expire. Default is "0" meaning cache will never expire
         @return:
         """
-        return {"id": "tag%s" % tag,
-                "label": "[B]%s[/B]" % tagname,
+        return {"id": f"tag{tag}",
+                "label": f"[B]{tagname}[/B]",
                 "is_folder": True,
                 "is_playable": False,
                 "url": get_url(self.site.url,
@@ -84,11 +84,11 @@ class Brand(pages.Page):
                                                taginfo=self.site.language(int(tag["titleId"])),
                                                tagicon=self.site.get_media(tag["icon"]) if "icon" in tag
                                                else "DefaultAddonsSearch.png",
-                                               content=tag["content"] if "content" in tag else "videos",
-                                               has_children=True if "tags" in tag else False,
+                                               content=tag.get("content", "videos"),
+                                               has_children="tags" in tag,
                                                cache_expire="86400")
 
-    def set_context_title(self):
+    def set_context_title(self) -> None:
         if self.action == "search_by_tag":
             self.site.context_title = self.params["tagname"]
         else:
@@ -149,12 +149,12 @@ class Brand(pages.Page):
                     brands["data"].append(brand)
 
             return brands
-        return super(Brand, self).get_data_query()
+        return super().get_data_query()
 
     def get_cache_filename(self):
         if "persons" in self.params:
-            return os.path.join(self.site.data_path, "person_brands_%s.json" % self.params["persons"])
-        return super(Brand, self).get_cache_filename()
+            return os.path.join(self.site.data_path, "person_brands_{}.json".format(self.params["persons"]))
+        return super().get_cache_filename()
 
     def get_load_url(self):
         if self.action == "search" and self.search_text:
@@ -201,7 +201,7 @@ class Brand(pages.Page):
 
         return get_url(self.site.url, **url_params)
 
-    def play(self):
+    def play(self) -> None:
 
         videos = self.site.request(get_url(self.site.api_url + "/videos", brands=self.params["brands"]),
                                    output="json")
@@ -213,7 +213,7 @@ class Brand(pages.Page):
     def create_element_li(self, element):
 
         if "has_children" in self.params and self.params["has_children"] == "True":
-            return super(Brand, self).create_element_li(element)
+            return super().create_element_li(element)
 
         is_folder, is_music_folder = self.is_folder(element)
         label = self.get_label(element)
@@ -228,7 +228,7 @@ class Brand(pages.Page):
         return {"id": element["id"],
                 "is_folder": is_folder,
                 "is_playable": not is_folder,
-                "label": "[B]%s[/B]" % label if is_folder else label,
+                "label": f"[B]{label}[/B]" if is_folder else label,
                 "url": self.get_element_url(element, is_folder, is_music_folder),
                 "info": {"title": element.get("title"),
                          "sorttitle": element.get("title"),
@@ -254,7 +254,7 @@ class Brand(pages.Page):
                 "cast": self.get_cast(element["id"], bp.get("cast", [])),
                 }
 
-    def enrich_info_tag(self, list_item, episode, brand):
+    def enrich_info_tag(self, list_item, episode, brand) -> None:
         bp = self.parse_body(brand)
         list_item.setInfo("video", {"title": episode.get("combinedTitle"),
                                     "mediatype": "movie",
@@ -278,7 +278,7 @@ class Brand(pages.Page):
 
         return actors
 
-    def add_context_menu(self, category):
+    def add_context_menu(self, category) -> None:
         pass
         # if category.get("type", "video") == "video":
         #     self.context_menu_items.append(("Set quality",
@@ -300,7 +300,7 @@ class Brand(pages.Page):
             rank = brand["rank"]
             if rank:
                 color = "FF00FF00" if rank >= 7.0 else "yellow" if (7.0 > rank >= 5.0) else "red"
-                return "[COLOR %s][%s][/COLOR] %s" % (color, rank, brand["title"])
+                return "[COLOR {}][{}][/COLOR] {}".format(color, rank, brand["title"])
             return brand["title"]
         return brand["title"]
 

@@ -6,12 +6,12 @@ from smotrim.modules import brands, channels, pages
 
 
 class ChannelMenu(pages.Page):
-    def __init__(self, site):
-        super(ChannelMenu, self).__init__(site)
+    def __init__(self, site) -> None:
+        super().__init__(site)
         self.brand = brands.Brand(site)
         self.cache_enabled = True
 
-    def preload(self):
+    def preload(self) -> None:
         spath = self.get_stream_url_from_double(self.params["channels"])
         if spath:
             if self.site.addon.getSettingBool("iptv.enabled"):
@@ -42,11 +42,11 @@ class ChannelMenu(pages.Page):
                        limit=self.limit, offset=offset, url=self.site.url)
 
     def get_load_url_ext(self, ch_id, limit, offset):
-        return get_url("%s/menu/channels/%s" % (self.site.api_url, str(ch_id)),
+        return get_url(f"{self.site.api_url}/menu/channels/{ch_id!s}",
                        limit=limit,
                        offset=offset)
 
-    def set_context_title(self):
+    def set_context_title(self) -> None:
         self.site.context_title = self.params.get("title")
 
     def create_element_li(self, element):
@@ -59,7 +59,7 @@ class ChannelMenu(pages.Page):
                                                       has_children=False,
                                                       cache_expire="86400")
         return {"id": element["id"],
-                "label": "[B]%s[/B]" % element["title"],
+                "label": "[B]{}[/B]".format(element["title"]),
                 "is_folder": True,
                 "is_playable": False,
                 "url": get_url(self.site.url,
@@ -68,15 +68,15 @@ class ChannelMenu(pages.Page):
                                search=element["title"],
                                cache_expire="86400",
                                url=self.site.url),
-                "info": {"plot": "%s [%s]" % (self.site.language(30010), element["title"])},
+                "info": {"plot": "{} [{}]".format(self.site.language(30010), element["title"])},
                 "art": {"icon": self.site.get_media("search.png"),
                         "fanart": self.site.get_media("background.jpg")},
                 }
 
-    def get_cache_filename_prefix(self):
-        return "channel_menu_%s" % self.params["channels"]
+    def get_cache_filename_prefix(self) -> str:
+        return "channel_menu_{}".format(self.params["channels"])
 
-    def play(self):
+    def play(self) -> None:
         spath = self.get_stream_url_from_double(self.params.get("channels"))
         self.play_url(spath)
 
@@ -85,7 +85,7 @@ class ChannelMenu(pages.Page):
             _, live = self.get_channel_live_double(channel_id)
             return live
         except:
-            xbmc.log("Error in finding live stream for the channel %s" % channel_id, xbmc.LOGERROR)
+            xbmc.log(f"Error in finding live stream for the channel {channel_id}", xbmc.LOGERROR)
             return ""
 
     def lookup_channel(self, channel_id):
@@ -110,17 +110,17 @@ class ChannelMenu(pages.Page):
             headers["Sec-Fetch-Site"] = "cross-site"
 
             if ch.get("type") == "vitrina":
-                xbmc.log("Getting live stream for channel %s from Vitrina TV" % ch.get("title", ""),
+                xbmc.log("Getting live stream for channel {} from Vitrina TV".format(ch.get("title", "")),
                          xbmc.LOGDEBUG)
                 return doublemap, self.get_vitrina_live_url(ch, headers)
             if ch.get("type") == "video":
-                xbmc.log("Getting live stream for channel %s from Smotrim.ru" % ch.get("title", ""),
+                xbmc.log("Getting live stream for channel {} from Smotrim.ru".format(ch.get("title", "")),
                          xbmc.LOGDEBUG)
                 if doublemap.get("live_id"):
                     try:
                         headers["Host"] = self.site.liveapi_host
                         headers["Sec-Fetch-Site"] = "none"
-                        datalive = self.site.request("https://%s/iframe/datalive/id/%s/" % (self.site.liveapi_host,
+                        datalive = self.site.request("https://{}/iframe/datalive/id/{}/".format(self.site.liveapi_host,
                                                                                             doublemap["live_id"]),
                                                      output="json", headers=headers)
                         # xbmc.log(json.dumps(datalive), xbmc.LOGDEBUG)
@@ -130,25 +130,25 @@ class ChannelMenu(pages.Page):
                         xbmc.log("Getting live stream from Smotrim.ru failed", xbmc.LOGDEBUG)
                         return doublemap, ""
             elif ch.get("type") == "audio":
-                xbmc.log("Getting live stream for radio %s from Smotrim.ru" % ch.get("title", ""),
+                xbmc.log("Getting live stream for radio {} from Smotrim.ru".format(ch.get("title", "")),
                          xbmc.LOGDEBUG)
                 return doublemap, ch.get("streamUrl")
         else:
-            xbmc.log("Channel id %s not found in channel data" % channel_id, xbmc.LOGDEBUG)
+            xbmc.log(f"Channel id {channel_id} not found in channel data", xbmc.LOGDEBUG)
 
         return doublemap, ""
 
     def get_vitrina_live_url(self, channel, headers):
         """Get the live stream from Vitrina TV.
         @param channel: dict of the channel on smotrim.ru
-        @return: channel stream URL
+        @return: channel stream URL.
         """
         try:
             headers["Host"] = "player.mediavitrina.ru"
             sdk = self.site.request(channel["sources"]["webos"], output="json", headers=headers)
             # xbmc.log(json.dumps(sdk), xbmc.LOGDEBUG)
 
-            xbmc.log("Vitrina TV SDK API version %s" % sdk["result"]["sdk_config"]["api_version"], xbmc.LOGDEBUG)
+            xbmc.log("Vitrina TV SDK API version {}".format(sdk["result"]["sdk_config"]["api_version"]), xbmc.LOGDEBUG)
 
             headers["Host"] = "media.mediavitrina.ru"
             vitrinalive = self.site.request(sdk["result"]["sdk_config"]["streams_api_url"],
@@ -164,15 +164,11 @@ class ChannelMenu(pages.Page):
 
         thisdate = kodiutils.get_date_from_timestamp()
 
-        tvguide = self.site.request("%s/tvps/channels/%s/doubles/%s/?from=%s&depth=2" % (self.site.api_url,
-                                                                                         channel_id,
-                                                                                         double_id,
-                                                                                         thisdate),
+        tvguide = self.site.request(f"{self.site.api_url}/tvps/channels/{channel_id}/doubles/{double_id}/?from={thisdate}&depth=2",
                                     output="json")
 
         if "data" in tvguide:
             return tvguide["data"]
         if "metadata" in tvguide:
-            xbmc.log("Error querying TV Guide for %s:%s - %s %s" %
-                     (channel_id, double_id, tvguide["metadata"]["code"], tvguide["metadata"]["errorMessage"]))
+            xbmc.log("Error querying TV Guide for {}:{} - {} {}".format(channel_id, double_id, tvguide["metadata"]["code"], tvguide["metadata"]["errorMessage"]))
         return []

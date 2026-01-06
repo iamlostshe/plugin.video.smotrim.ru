@@ -6,10 +6,8 @@ import xbmc
 
 
 class SmotrimWsgiServer(WSGIServer):
-    monitor = None
-    m_process = None
 
-    def start(self):
+    def start(self) -> None:
         self.monitor = xbmc.Monitor()
 
         try:
@@ -21,4 +19,3 @@ class SmotrimWsgiServer(WSGIServer):
         if self.monitor.abortRequested():
             xbmc.log("SmotrimWsgiServer - abortRequested!", xbmc.LOGDEBUG)
             raise StopIteration
-

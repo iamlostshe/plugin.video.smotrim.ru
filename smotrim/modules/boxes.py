@@ -6,8 +6,8 @@ from smotrim.modules import articles, audios, brands, pages, podcasts, videos
 
 
 class Box(pages.Page):
-    def __init__(self, site):
-        super(Box, self).__init__(site)
+    def __init__(self, site) -> None:
+        super().__init__(site)
         self.cache_enabled = True
         self.alias = self.params.get("alias", "tabbar-menu")
         self.brand = brands.Brand(site)
@@ -45,7 +45,7 @@ class Box(pages.Page):
                        url=self.site.url)
 
     def get_load_url(self):
-        return get_url("%s/boxes/%s" % (self.site.api_url, self.alias))
+        return get_url(f"{self.site.api_url}/boxes/{self.alias}")
 
     def get_data_query(self):
         if self.is_cache_available():
@@ -110,8 +110,8 @@ class Box(pages.Page):
             if link_alias == "":
                 link_alias = self.get_alias_from_url(element.get("url", ""))
             if link_alias:
-                return {"id": "box%s" % element.get("id"),
-                        "label": "[B]%s[/B]" % element.get("title", ""),
+                return {"id": "box{}".format(element.get("id")),
+                        "label": "[B]{}[/B]".format(element.get("title", "")),
                         "is_folder": True,
                         "is_playable": False,
                         "url": get_url(self.site.url,
@@ -128,11 +128,11 @@ class Box(pages.Page):
 
         return {}
 
-    def set_context_title(self):
+    def set_context_title(self) -> None:
         self.site.context_title = self.params.get("title", self.site.language(30080))
 
     def get_cache_filename(self):
-        return os.path.join(self.site.data_path, "boxes_%s_%s_%s.json" % (self.alias, self.limit, self.offset))
+        return os.path.join(self.site.data_path, f"boxes_{self.alias}_{self.limit}_{self.offset}.json")
 
     @staticmethod
     def get_alias_from_url(url):
@@ -142,8 +142,8 @@ class Box(pages.Page):
         return ""
 
     @staticmethod
-    def get_content_type(templ):
-        if templ == "brandsFeed" or templ == "videos":
+    def get_content_type(templ) -> str:
+        if templ in {"brandsFeed", "videos"}:
             return "videos"
         if templ == "audios":
             return "musicvideos"

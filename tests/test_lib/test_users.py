@@ -20,53 +20,106 @@ def get_project_folder(fld, plugin_name):
 
 
 class UsersTestCase(unittest.TestCase):
-
     @mock.patch("sys.argv", ["", "1", ""])
-    def test_01_load(self):
+    def test_01_load(self) -> None:
         self.run_plugin()
 
-    @mock.patch("sys.argv", ["", "2", "?action=load&context=searches&url=plugin%3a%2f%2fplugin.video.smotrim.ru%2f"])
-    def test_02_searches(self):
+    @mock.patch(
+        "sys.argv",
+        [
+            "",
+            "2",
+            "?action=load&context=searches&url=plugin%3a%2f%2fplugin.video.smotrim.ru%2f",
+        ],
+    )
+    def test_02_searches(self) -> None:
         self.run_plugin()
 
-    @mock.patch("sys.argv", ["", "2", "?action=search&context=brands&url=plugin%3a%2f%2fplugin.video.smotrim.ru%2f"])
-    def test_03_search(self):
+    @mock.patch(
+        "sys.argv",
+        [
+            "",
+            "2",
+            "?action=search&context=brands&url=plugin%3a%2f%2fplugin.video.smotrim.ru%2f",
+        ],
+    )
+    def test_03_search(self) -> None:
         self.run_plugin()
 
-    @mock.patch("sys.argv", ["", "4", "?action=load&context=articles&url=plugin%3a%2f%2fplugin.video.smotrim.ru%2f"])
-    def test_04_news(self):
+    @mock.patch(
+        "sys.argv",
+        [
+            "",
+            "4",
+            "?action=load&context=articles&url=plugin%3a%2f%2fplugin.video.smotrim.ru%2f",
+        ],
+    )
+    def test_04_news(self) -> None:
         self.run_plugin()
 
-    @mock.patch("sys.argv",
-                ["", "14", "?action=load&content=files&context=channels&url=plugin%3a%2f%2fplugin.video.smotrim.ru%2f"])
-    def test_041_channels(self):
+    @mock.patch(
+        "sys.argv",
+        [
+            "",
+            "14",
+            "?action=load&content=files&context=channels&url=plugin%3a%2f%2fplugin.video.smotrim.ru%2f",
+        ],
+    )
+    def test_041_channels(self) -> None:
         self.run_plugin()
 
-    @mock.patch("sys.argv",
-                ["", "14", "?action=load&cache_expire=86400&content=albums&context=podcasts&"
-                           "url=plugin%3a%2f%2fplugin.video.smotrim.ru%2f"])
-    def test_042_podcasts(self):
+    @mock.patch(
+        "sys.argv",
+        [
+            "",
+            "14",
+            "?action=load&cache_expire=86400&content=albums&context=podcasts&"
+            "url=plugin%3a%2f%2fplugin.video.smotrim.ru%2f",
+        ],
+    )
+    def test_042_podcasts(self) -> None:
         self.run_plugin()
 
-    @mock.patch("sys.argv", ["", "2", "?action=search_by_tag&cache_expire=86400&content=files&context=brands&"
-                             "has_children=True&tagname=Documentary&tags=10000002&"
-                             "url=plugin%3a%2f%2fplugin.video.smotrim.ru%2f"])
-    def test_05_documentary(self):
+    @mock.patch(
+        "sys.argv",
+        [
+            "",
+            "2",
+            "?action=search_by_tag&cache_expire=86400&content=files&context=brands&"
+            "has_children=True&tagname=Documentary&tags=10000002&"
+            "url=plugin%3a%2f%2fplugin.video.smotrim.ru%2f",
+        ],
+    )
+    def test_05_documentary(self) -> None:
         self.run_plugin()
 
-    @mock.patch("sys.argv", ["", "8", "?action=search_by_tag&cache_expire=86400&content=movies&context=brands&"
-                             "has_children=False&tagname=Premieres&tags=2994&"
-                             "url=plugin%3a%2f%2fplugin.video.smotrim.ru%2f"])
-    def test_06_premieres(self):
+    @mock.patch(
+        "sys.argv",
+        [
+            "",
+            "8",
+            "?action=search_by_tag&cache_expire=86400&content=movies&context=brands&"
+            "has_children=False&tagname=Premieres&tags=2994&"
+            "url=plugin%3a%2f%2fplugin.video.smotrim.ru%2f",
+        ],
+    )
+    def test_06_premieres(self) -> None:
         self.run_plugin()
 
-    @mock.patch("sys.argv", ["", "10", "?action=load&context=history&url=plugin%3a%2f%2fplugin.video.smotrim.ru%2f"])
-    def test_07_history(self):
+    @mock.patch(
+        "sys.argv",
+        [
+            "",
+            "10",
+            "?action=load&context=history&url=plugin%3a%2f%2fplugin.video.smotrim.ru%2f",
+        ],
+    )
+    def test_07_history(self) -> None:
         self.run_plugin()
 
-    def run_plugin(self):
+    def run_plugin(self) -> None:
         user = User()
-        self.assertIsNotNone(user, "Constructor User() failed!")
+        assert user is not None, "Constructor User() failed!"
         smotrim = Smotrim()
         smotrim.api_host = "api.smotrim.ru"
         smotrim.cdnapi_host = "cdnapi.smotrim.ru"
@@ -81,10 +134,15 @@ class UsersTestCase(unittest.TestCase):
         if not os.path.exists(smotrim.history_path):
             os.makedirs(smotrim.history_path)
 
-        self.resource_file = os.path.join(self.project_dir, "resources", "language", "resource.language.ru_ru",
-                                          "strings.po")
+        self.resource_file = os.path.join(
+            self.project_dir,
+            "resources",
+            "language",
+            "resource.language.ru_ru",
+            "strings.po",
+        )
         smotrim.language = self.localized_string
-        self.assertIsNotNone(smotrim, "Constructor Smotrim() failed!")
+        assert smotrim is not None, "Constructor Smotrim() failed!"
         user.watch(smotrim)
         shutil.rmtree(smotrim.data_path)
 
@@ -95,6 +153,7 @@ class UsersTestCase(unittest.TestCase):
                 if f"#{id}" in line:
                     return re.findall(r"(?<=msgstr.).*", lines[index + 2])[0][1:-1]
         self.fail(f"Fail to find resource string {id}")
+        return None
 
 
 if __name__ == "__main__":

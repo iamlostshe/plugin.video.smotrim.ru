@@ -30,7 +30,7 @@ class Home(pages.Page):
 
         return {"data": home_menu}
 
-    def set_context_title(self):
+    def set_context_title(self) -> None:
         self.site.context_title = self.site.language(30300)
 
     def create_fav_li(self):
@@ -38,6 +38,6 @@ class Home(pages.Page):
                                    url=get_url(self.site.url, action="favorites", context="home", url=self.site.url),
                                    info={"plot": self.site.language(30023)})
 
-    def favorites(self):
+    def favorites(self) -> None:
         xbmc.executebuiltin("ActivateWindow(Favourites)")
 

@@ -2,9 +2,9 @@
 
 
 class IPTVManager:
-    """Interface to IPTV Manager"""
+    """Interface to IPTV Manager."""
 
-    def __init__(self, extra):
+    def __init__(self, extra) -> None:
         """Initialize IPTV Manager object."""
         self.extra = extra
         self.port = int(extra.site.params["port"])
@@ -12,7 +12,7 @@ class IPTVManager:
     def via_socket(func):  # pylint: disable=no-self-argument
         """Send the output of the wrapped function to socket."""
 
-        def send(self):
+        def send(self) -> None:
             """Decorator to send data over a socket."""
             import json
             import socket
@@ -28,9 +28,9 @@ class IPTVManager:
     @via_socket
     def send_channels(self):  # pylint: disable=no-method-argument,no-self-use
         """Return JSON-STREAMS formatted information to IPTV Manager."""
-        return dict(version=1, streams=self.extra.export_channels())
+        return {"version": 1, "streams": self.extra.export_channels()}
 
     @via_socket
     def send_epg(self):  # pylint: disable=no-method-argument,no-self-use
         """Return JSON-EPG formatted information to IPTV Manager."""
-        return dict(version=1, epg=self.extra.export_tv_guide())
+        return {"version": 1, "epg": self.extra.export_tv_guide()}

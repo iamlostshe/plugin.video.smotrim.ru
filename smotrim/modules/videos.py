@@ -4,8 +4,8 @@ from smotrim.modules import pages
 
 class Video(pages.Page):
 
-    def __init__(self, site):
-        super(Video, self).__init__(site)
+    def __init__(self, site) -> None:
+        super().__init__(site)
         self.cache_enabled = True
         self.context = "videos"
 
@@ -15,7 +15,7 @@ class Video(pages.Page):
                        limit=self.limit,
                        offset=self.offset)
 
-    def set_context_title(self):
+    def set_context_title(self) -> None:
         if "data" in self.data:
             self.site.context_title = self.data["data"][0]["brandTitle"] \
                 if len(self.data["data"]) > 0 else self.site.language(30040)
@@ -50,7 +50,7 @@ class Video(pages.Page):
                         },
                 }
 
-    def enrich_info_tag(self, list_item, episode, brand):
+    def enrich_info_tag(self, list_item, episode, brand) -> None:
         bp = self.parse_body(brand)
         list_item.setInfo("video", {"title": episode.get("combinedTitle"),
                                     "mediatype": "episode",
@@ -75,11 +75,11 @@ class Video(pages.Page):
                        spath=self.get_video_url(element["sources"]),
                        url=self.site.url)
 
-    def play(self):
+    def play(self) -> None:
         spath = self.params["spath"]
 
         this_video, next_video = self.get_this_and_next_episode(self.params["videos"])
         self.play_url(spath, this_video, next_video)
 
-    def get_cache_filename_prefix(self):
-        return "brand_videos_%s" % self.params["brands"]
+    def get_cache_filename_prefix(self) -> str:
+        return "brand_videos_{}".format(self.params["brands"])

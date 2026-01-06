@@ -7,11 +7,11 @@ from smotrim.modules import pages
 
 
 class Channel(pages.Page):
-    def __init__(self, site):
-        super(Channel, self).__init__(site)
+    def __init__(self, site) -> None:
+        super().__init__(site)
         self.cache_enabled = True
 
-    def preload(self):
+    def preload(self) -> None:
         if self.site.addon.getSettingBool("iptv.enabled"):
             self.list_items.append(self.create_menu_li("lives", 30410, is_folder=False, is_playable=False,
                                                        url=get_url(self.site.url,
@@ -22,8 +22,8 @@ class Channel(pages.Page):
 
         self.cache_expire = 0
 
-    def tvguide(self):
-        xbmc.executebuiltin("ActivateWindow(TVGuide,,'%s')" % self.site.url)
+    def tvguide(self) -> None:
+        xbmc.executebuiltin(f"ActivateWindow(TVGuide,,'{self.site.url}')")
 
     def get_load_url(self):
         return get_url(self.site.api_url + "/geo")
@@ -65,15 +65,14 @@ class Channel(pages.Page):
                         "poster": self.get_pic_from_id(element["picId"], "it")},
                 }
 
-    def add_context_menu(self, category):
+    def add_context_menu(self, category) -> None:
         self.context_menu_items.append((self.site.language(30405),
-                                        "RunPlugin(%s)" %
-                                        get_url(self.site.url,
+                                        "RunPlugin({})".format(get_url(self.site.url,
                                                 action="hide_empty_channels",
                                                 context="extras",
-                                                url=self.site.url)))
+                                                url=self.site.url))))
 
-    def set_context_title(self):
+    def set_context_title(self) -> None:
         self.site.context_title = self.site.language(30400)
 
     def get_cache_filename(self):
