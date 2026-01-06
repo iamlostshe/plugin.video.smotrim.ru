@@ -2,12 +2,16 @@ import inspect
 import os
 import sys
 from importlib import import_module
+from pathlib import Path
 from urllib.parse import parse_qsl
 from urllib.parse import quote as encode4url
 
 import xbmc
 import xbmcaddon
 import xbmcvfs
+from fake_useragent import UserAgent
+
+from smotrim.users import User
 
 from . import kodiutils
 
@@ -15,7 +19,7 @@ ADDON_ID = "plugin.video.smotrim.ru"
 SERVER_ADDR = "127.0.0.1"
 SERVER_PORT = 47122
 
-USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:101.0) Gecko/20100101 Firefox/101.0"
+USER_AGENT = UserAgent()
 
 
 class Smotrim:
@@ -24,10 +28,10 @@ class Smotrim:
         self.server_port = SERVER_PORT
         self.addon = xbmcaddon.Addon(self.id_)
         self.path = self.addon.getAddonInfo("path")
-        self.media_path = os.path.join(self.path, "resources", "media")
+        self.media_path = Path(self.path) / "resources" / "media"
         self.data_path = get_data_path(self.addon)
         self.history_path = kodiutils.create_folder(
-            os.path.join(self.data_path, "history"),
+            Path(self.data_path) / "history",
         )
 
         self.user = None
@@ -52,7 +56,7 @@ class Smotrim:
         self.action = "load"
         self.context_title = self.language(30300)
 
-    def show_to(self, user, context: str | None = "") -> None:
+    def show_to(self, user: User, context: str | None = "") -> None:
         self.user = user
 
         xbmc.log(f"Addon: {self.id_}", xbmc.LOGDEBUG)
@@ -87,7 +91,12 @@ class Smotrim:
         classes = [cls for _, cls in inspect.getmembers(mod, inspect.isclass(mod))]
         getattr(classes[0](self), self.action)()
 
-    def request(self, url: str, output: str | None = "text", headers=None):
+    def request(
+        self,
+        url: str,
+        output: str | None = "text",
+        headers: dict[str, str] | None = None,
+    ) -> any:
         xbmc.log(f"Query site url: {url}", xbmc.LOGDEBUG)
         is_stream = output == "stream"
         response = self.user.get_http(url, headers=headers, stream=is_stream)
@@ -102,10 +111,10 @@ class Smotrim:
 
     # *** Add-on helpers
 
-    def get_media(self, file_name: str):
-        return os.path.join(self.media_path, file_name)
+    def get_media(self, file_name: str) -> Path:
+        return Path(self.media_path) / file_name
 
-    def get_user_input(self):
+    def get_user_input(self) -> str:
         kbd = xbmc.Keyboard()
         kbd.setDefault("")
         kbd.setHeading(self.language(30010))
@@ -118,7 +127,7 @@ class Smotrim:
         return keyword
 
     @staticmethod
-    def prepare_url(url: str):
+    def prepare_url(url: str) -> str:
         return "|".join(
             [
                 url,
@@ -142,5 +151,5 @@ def get_data_path(addon: object = None):
     if addon is None:
         addon = xbmcaddon.Addon(ADDON_ID)
     return kodiutils.create_folder(
-        os.path.join(xbmcvfs.translatePath(addon.getAddonInfo("profile")), "data"),
+        Path(xbmcvfs.translatePath(addon.getAddonInfo("profile"))) / "data",
     )

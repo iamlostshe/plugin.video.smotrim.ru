@@ -25,10 +25,9 @@
         </disclaimer>
         <language>ru en</language>
         <licence>GPL-3.0-or-later</licence>
-        <forum>http://xbmc.ru/forum/showthread.php?t=23431</forum>
         <assets>
-            <icon>asets/icon.png</icon>
-            <fanart>asets/fanart.jpg</fanart>
+            <icon>resources/icon.png</icon>
+            <fanart>resources/fanart.jpg</fanart>
             <screenshot>resources/screenshot-01.jpg</screenshot>
             <screenshot>resources/screenshot-02.jpg</screenshot>
             <screenshot>resources/screenshot-03.jpg</screenshot>

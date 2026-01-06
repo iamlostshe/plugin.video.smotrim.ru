@@ -6,45 +6,30 @@ import requests
 import xbmc
 import xbmcgui
 
-from smotrim.smotrim import USER_AGENT
+from smotrim.smotrim import USER_AGENT, Smotrim
 
 NEVER = 100 * 1000 * 60 * 60 * 24
 
 
 class User:
     def __init__(self) -> None:
-        self.phone = ""
-        self.domain = ""
-        self._geo = {}
-
+        self.phone = self.domain = self._cookies_file = ""
+        self._geo = self._headers = {}
         self._site = None
-        self.session = None
 
-        self._headers = {}
 
-        self._cookies_file = ""
-
-    def init_session(self, site) -> None:
+    def init_session(self, site: Smotrim) -> None:
         self._site = site
 
         self.phone = site.addon.getSetting("phone")
         self.domain = site.domain
 
-        self.session = requests.Session()
-
-        self._headers = {
-            "User-Agent": USER_AGENT,
-            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
-            "Accept-Encoding": "gzip, deflate, br",
-            "Accept-Language": "en-US,en;q=0.5",
-            "Connection": "keep-alive",
-            "Sec-Fetch-Dest": "document",
-            "Sec-Fetch-Mode": "navigate",
-            "Sec-Fetch-Site": "none",
-            "Sec-Fetch-User": "?1",
-            "Sec-GPC": "1",
-            "Upgrade-Insecure-Requests": "1",
-        }
+        self.session = requests.Session(
+            headers={
+                "User-Agent": USER_AGENT,
+                "X-Requested-With": "XMLHTTPRequest",
+            },
+        )
 
         # Load saved cookies
         self._cookies_file = os.path.join(self._site.data_path, "cookies.dat")
@@ -59,12 +44,7 @@ class User:
             self.get_http(f"https://{self.domain}")
             self._save_cookies()
 
-    def watch(self, site, context="") -> None:
-        """:param site: Smotrim
-        :return:
-        @param site: assumed Smotrim class
-        @param context: context to load. If empty then site will use CLI arguments
-        """
+    def watch(self, site: Smotrim, context: str | None = "") -> None:
         self.init_session(site)
 
         if self._login():
@@ -82,40 +62,24 @@ class User:
                 self._logout()
         else:
             self.session.cookies.set(
-                "phone", self.phone, expires=NEVER, domain=self._site.id, path="/"
+                "phone", self.phone, expires=NEVER, domain=self._site.id, path="/",
             )
             self._save_cookies()
 
         if self._is_login():
             return True
 
-        login_url = "https://" + self.domain + "/personal/login?redirect=%2F"
+        login_url = f"https://{self.domain}/personal/login?redirect=%2F"
 
         # Set region
         self.load_geo()
         self.session.cookies.set(
-            "region", self.get_region(), expires=NEVER, domain=self.domain, path="/"
+            "region", self.get_region(), expires=NEVER, domain=self.domain, path="/",
         )
-        xbmc.log("Region is {}".format(self.session.cookies["region"]), xbmc.LOGDEBUG)
-
-        # Set headers
-        headers = {
-            "User-Agent": USER_AGENT,
-            "Accept": "*/*",
-            "Accept-Encoding": "gzip, deflate, br",
-            "Accept-Language": "en-US,en;q=0.5",
-            "Connection": "keep-alive",
-            "Host": self.domain,
-            "Referer": f"https://{self.domain}/",
-            "Sec-Fetch-Dest": "empty",
-            "Sec-Fetch-Mode": "same-origin",
-            "Sec-Fetch-Site": "same-origin",
-            "Sec-GPC": "1",
-            "X-Requested-With": "XMLHTTPRequest",
-        }
+        xbmc.log(f"Region is {self.session.cookies['region']}", xbmc.LOGDEBUG)
 
         # Try to login - first load the form
-        resp = self.session.get(login_url, headers=headers)
+        resp = self.session.get(login_url)
         if resp.status_code != 200:
             xbmc.log(
                 f"Couldn't load the login page {login_url}, error {resp.status_code!a}",
@@ -138,12 +102,9 @@ class User:
 
         xbmc.log(f"Token retrieved successfully: {token: }")
 
-        headers.update({"Origin": f"https://{self.domain}", "Referer": login_url})
-
         self.session.post(
             login_url,
             files={"phone": (None, self.phone), "_token": (None, token)},
-            headers=headers,
         )
 
         auth_code = xbmcgui.Dialog().numeric(0, self._site.language(30500), "")
@@ -161,13 +122,12 @@ class User:
         self.session.post(
             login_url,
             files={"code": (None, auth_code), "phone": (None, self.phone)},
-            headers=headers,
         )
 
         if self._is_login():
             xbmc.log(
                 "User login SUCCESS, id={}, usgr={}".format(
-                    self.session.cookies["smid"], self.session.cookies["usgr"]
+                    self.session.cookies["smid"], self.session.cookies["usgr"],
                 ),
                 xbmc.LOGDEBUG,
             )
@@ -237,10 +197,8 @@ class User:
                     self.session.cookies.set_cookie(c)
 
     def _get_token(self, html_text):
-        # xbmc.log(html_text, xbmc.LOGDEBUG)
         input_match = re.search(r"<input.*\"_token\".*>", html_text)
         if input_match:
-            # xbmc.log("Found token field %s" % input_match.group(0), xbmc.LOGDEBUG)
             token_match = re.search(r"(value\s*=\s*\")(.+)(\">)", input_match.group(0))
             if token_match and (len(token_match.group()) > 1):
                 return token_match.group(2)
