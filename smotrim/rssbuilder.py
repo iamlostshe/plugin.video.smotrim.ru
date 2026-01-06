@@ -5,7 +5,7 @@ from xml.dom import minidom
 import xbmc
 import xbmcvfs
 
-from smotrim.smotrim import SERVER_ADDR
+from smotrim.config import SERVER_ADDR
 
 RSSFEEDS = "RssFeeds.xml"
 RSSUPDATEINTERVAL = 30

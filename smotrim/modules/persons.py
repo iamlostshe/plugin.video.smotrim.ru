@@ -5,11 +5,9 @@ import re
 import xbmc
 
 from smotrim import kodiutils, smotrim, users
+from smotrim.config import SERVER_ADDR, CONTEXT, CONTEXT_LIMIT
 from smotrim.kodiutils import get_url
 from smotrim.modules import pages
-
-CONTEXT = "persons"
-CONTEXT_LIMIT = 30
 
 
 class Person(pages.Page):
@@ -104,4 +102,4 @@ def get_person_remote_thumbnail_url(brand_id, person_name) -> str:
 
 
 def get_person_thumbnail(brand_id, person_name) -> str:
-    return get_url(f"http://{smotrim.SERVER_ADDR}:{smotrim.SERVER_PORT}/brands/{brand_id}", person_name=person_name)
+    return get_url(f"http://{SERVER_ADDR}:{smotrim.SERVER_PORT}/brands/{brand_id}", person_name=person_name)

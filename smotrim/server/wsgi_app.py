@@ -3,8 +3,8 @@
 import re
 from urllib.parse import parse_qsl
 
+from smotrim.config import SERVER_ADDR
 from smotrim.modules import articles, persons
-from smotrim.smotrim import SERVER_ADDR
 
 
 def default_app(environ, start_response):

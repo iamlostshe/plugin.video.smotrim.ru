@@ -1,6 +1,7 @@
 import os
 import pickle
 import re
+from pathlib import Path
 
 import requests
 import xbmc
@@ -32,7 +33,7 @@ class User:
         )
 
         # Load saved cookies
-        self._cookies_file = os.path.join(self._site.data_path, "cookies.dat")
+        self._cookies_file = Path(self._site.data_path) / "cookies.dat"
         self._load_cookies()
 
         # If UID not in cookies, request it

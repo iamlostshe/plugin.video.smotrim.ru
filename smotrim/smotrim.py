@@ -9,16 +9,10 @@ import xbmc
 import xbmcaddon
 import xbmcvfs
 
-from lib.fake_useragent import UserAgent
+from smotrim.config import ADDON_ID, SERVER_PORT, USER_AGENT
 from smotrim.users import User
 
 from . import kodiutils
-
-ADDON_ID = "plugin.video.smotrim.ru"
-SERVER_ADDR = "127.0.0.1"
-SERVER_PORT = 47122
-
-USER_AGENT = UserAgent()
 
 
 class Smotrim:
